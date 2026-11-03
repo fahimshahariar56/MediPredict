@@ -1,0 +1,6 @@
+# Ignore raw datasets
+dataset/**/raw/
+
+# Keep data folders in Git
+!dataset/**/data/
+!dataset/**/data/.gitkeep

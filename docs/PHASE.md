@@ -1,501 +1,458 @@
 # MediPredict — Development Phases
 
-**Project:** MediPredict  
-**Document Version:** 1.0  
-**Status:** In Progress
+## Development Rules
 
----
+1.  Work on one phase at a time.
+2.  Keep the architecture documented and consistent.
+3.  Express.js remains the main application backend.
+4.  FastAPI remains the dedicated ML service.
+5.  MongoDB is the application database.
+6.  Mongoose is the MongoDB ODM.
+7.  Better Auth + JWT Plugin is the authentication direction.
+8.  Do not move application user/database responsibilities into FastAPI.
+9.  Do not implement medical diagnosis or treatment functionality.
+10. Do not expose secrets in Git.
 
-## Development Philosophy
+------------------------------------------------------------------------
 
-MediPredict will be developed through sequential, milestone-based phases.
+# Phase 01 — Project Foundation
 
-### Core Rules
+### Goal
 
-1. Complete the current phase before starting the next phase.
-2. Validate datasets and ML models before integrating predictions.
-3. Backend, database, and ML integration must be completed before full frontend integration.
-4. Never use fake prediction results.
-5. Never present unvalidated model scores as reliable risk estimates.
-6. Maintain clean architecture and modular code.
-7. Write and maintain documentation throughout development.
-8. Test every major feature before marking a phase complete.
-
----
-
-# PHASE 00 — Project Foundation
-
-**Objective:** Establish the project structure and development environment.
+Establish the repository and service boundaries.
 
 ### Tasks
 
-- [x] Create project repository.
-- [x] Initialize Next.js frontend.
-- [x] Initialize Express backend.
-- [ ] Configure TypeScript.
-- [ ] Configure environment variables.
-- [ ] Configure ESLint and Prettier.
-- [ ] Establish Git branching and commit conventions.
-- [ ] Create project documentation structure.
-- [ ] Define coding standards.
+- Create repository structure.
+- Initialize frontend.
+- Initialize backend.
+- Initialize ML service.
+- Configure Git.
+- Configure `.gitignore`.
+- Create environment templates.
+- Create documentation.
 
-### Deliverables
-- Frontend foundation.
-- Backend foundation.
-- Initial project structure.
-- Development configuration.
+### Status
 
-**Completion Criteria:** Frontend and backend start successfully and communicate through a basic health-check endpoint.
+**In Progress**
 
----
+------------------------------------------------------------------------
 
-# PHASE 01 — Database & Authentication
+# Phase 02 — Next.js Frontend Foundation
 
-**Objective:** Establish persistent data storage and secure authentication.
+### Goal
 
-### Database Tasks
-
-- [ ] Configure Supabase PostgreSQL.
-- [ ] Configure Prisma ORM.
-- [ ] Design database schema.
-- [ ] Define User model.
-- [ ] Define Profile model.
-- [ ] Define Prediction model.
-- [ ] Define Prediction-related metadata.
-- [ ] Configure relationships.
-- [ ] Create and apply migrations.
-- [ ] Test database connections.
-
-### Authentication Tasks
-
-- [ ] Install and configure Better Auth.
-- [ ] Configure Prisma Adapter.
-- [ ] Configure JWT Plugin.
-- [ ] Configure JWKS.
-- [ ] Implement registration.
-- [ ] Implement login and logout.
-- [ ] Implement session management.
-- [ ] Implement role-based authorization.
-- [ ] Protect backend endpoints.
-- [ ] Test authentication flows.
-
-### Deliverables
-- Functional PostgreSQL database.
-- Prisma schema.
-- Better Auth integration.
-- Secure authentication system.
-
-**Completion Criteria:** Users can register, authenticate, and access protected endpoints with correct authorization.
-
----
-
-# PHASE 02 — Dataset Research & Preparation
-
-**Objective:** Prepare reliable datasets for both prediction systems.
-
-### Diabetes Dataset
-
-Dataset: Pima Indians Diabetes Dataset.
-
-Tasks:
-- [ ] Obtain the dataset.
-- [ ] Verify its source and license.
-- [ ] Inspect dataset structure.
-- [ ] Perform Exploratory Data Analysis.
-- [ ] Identify missing and invalid values.
-- [ ] Analyze feature distributions.
-- [ ] Analyze correlations.
-- [ ] Identify class imbalance.
-- [ ] Prepare preprocessing pipeline.
-
-### Heart Disease Dataset
-
-Dataset: UCI Heart Disease Dataset.
-
-Tasks:
-- [ ] Obtain the dataset.
-- [ ] Verify its source and license.
-- [ ] Inspect dataset structure.
-- [ ] Perform Exploratory Data Analysis.
-- [ ] Identify missing and invalid values.
-- [ ] Analyze feature distributions.
-- [ ] Analyze correlations.
-- [ ] Identify class imbalance.
-- [ ] Prepare preprocessing pipeline.
-
-### Deliverables
-- Verified datasets.
-- EDA notebooks.
-- Data quality reports.
-- Reusable preprocessing pipelines.
-
-**Completion Criteria:** Both datasets are understood, cleaned appropriately, and ready for model development.
-
----
-
-# PHASE 03 — Machine Learning Development
-
-**Objective:** Build and validate both machine learning models.
-
-### Diabetes Model
-
-- [ ] Establish baseline model.
-- [ ] Train Logistic Regression.
-- [ ] Train Random Forest.
-- [ ] Train XGBoost.
-- [ ] Compare model performance.
-- [ ] Tune hyperparameters.
-- [ ] Evaluate on unseen test data.
-- [ ] Assess calibration where probabilities are required.
-- [ ] Select the validated model.
-- [ ] Save model artifacts.
-
-### Heart Disease Model
-
-- [ ] Establish baseline model.
-- [ ] Train Logistic Regression.
-- [ ] Train Random Forest.
-- [ ] Train XGBoost.
-- [ ] Compare model performance.
-- [ ] Tune hyperparameters.
-- [ ] Evaluate on unseen test data.
-- [ ] Assess calibration where probabilities are required.
-- [ ] Select the validated model.
-- [ ] Save model artifacts.
-
-### Evaluation Metrics
-
-Depending on the dataset and intended use:
-
-- Accuracy.
-- Precision.
-- Recall.
-- F1-score.
-- ROC-AUC.
-- Confusion Matrix.
-- Calibration metrics.
-
-### Explainable AI
-
-- [ ] Integrate SHAP.
-- [ ] Generate global feature importance.
-- [ ] Generate local prediction explanations.
-- [ ] Validate SHAP output.
-- [ ] Prepare explanation response format.
-
-### Deliverables
-- Validated diabetes model.
-- Validated heart disease model.
-- Model evaluation reports.
-- SHAP explanation pipeline.
-- Versioned model artifacts.
-
-**Completion Criteria:** Both models pass predefined validation criteria. If a model does not meet the criteria, it must not be released for user-facing predictions.
-
----
-
-# PHASE 04 — FastAPI ML Service
-
-**Objective:** Expose validated ML models through independent REST APIs.
+Build the frontend foundation with Next.js App Router and
+JavaScript/JSX.
 
 ### Tasks
 
-- [ ] Initialize FastAPI project.
-- [ ] Establish Python project structure.
-- [ ] Configure Pydantic schemas.
-- [ ] Load validated model artifacts.
-- [ ] Implement model inference.
-- [ ] Implement diabetes prediction endpoint.
-- [ ] Implement heart disease prediction endpoint.
-- [ ] Implement SHAP explanation endpoint or integrated response.
-- [ ] Implement health-check endpoint.
-- [ ] Implement input validation.
-- [ ] Configure error handling.
-- [ ] Implement JWT verification using JWKS.
-- [ ] Write API tests.
+- Configure Next.js.
+- Configure Tailwind CSS.
+- Create `layout.js`.
+- Create `page.js`.
+- Create loading/error/not-found states.
+- Create shared UI components.
+- Create responsive layout.
+- Create public pages.
+- Create authentication pages.
+- Create dashboard shell.
 
-### Suggested API Endpoints
+### Required Structure
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| GET | /health | Service health |
-| POST | /api/v1/predict/diabetes | Diabetes prediction |
-| POST | /api/v1/predict/heart | Heart disease prediction |
-| GET | /api/v1/models | Model metadata |
+``` text
+src/app/
+├── layout.js
+├── page.js
+├── loading.js
+├── error.js
+├── not-found.js
+├── login/page.jsx
+├── register/page.jsx
+├── dashboard/page.jsx
+├── predictions/page.jsx
+├── diabetes/page.jsx
+├── heart-disease/page.jsx
+├── profile/page.jsx
+└── admin/
+```
 
-### Deliverables
-- Independent FastAPI service.
-- Validated prediction endpoints.
-- SHAP integration.
-- API documentation.
+### Status
 
-**Completion Criteria:** FastAPI returns valid, reproducible model predictions and explanations for valid inputs.
+**In Progress**
 
----
+------------------------------------------------------------------------
 
-# PHASE 05 — Express Backend Development
+# Phase 03 — Express Backend Foundation
 
-**Objective:** Build the main application backend and integrate all services.
+### Goal
 
-### Core Backend
-
-- [ ] Establish modular Express architecture.
-- [ ] Configure middleware.
-- [ ] Configure error handling.
-- [ ] Configure request validation.
-- [ ] Implement authentication integration.
-- [ ] Implement authorization middleware.
-- [ ] Implement user profile APIs.
-- [ ] Implement dashboard APIs.
-- [ ] Implement prediction APIs.
-- [ ] Implement prediction history APIs.
-- [ ] Implement admin APIs.
-- [ ] Implement pagination and filtering.
-- [ ] Configure logging.
-
-### ML Integration
-
-- [ ] Connect Express with FastAPI.
-- [ ] Configure service authentication.
-- [ ] Implement diabetes prediction orchestration.
-- [ ] Implement heart disease prediction orchestration.
-- [ ] Validate ML responses.
-- [ ] Store prediction results.
-- [ ] Handle ML service failures.
-- [ ] Implement appropriate timeouts.
-
-### Suggested API Modules
-
-- Authentication
-- Users
-- Profiles
-- Predictions
-- Dashboard
-- Admin
-- Health
-
-### Deliverables
-- Complete Express REST API.
-- Database integration.
-- FastAPI integration.
-- Backend API documentation.
-
-**Completion Criteria:** Express can securely authenticate users, communicate with FastAPI, and store prediction results in PostgreSQL.
-
----
-
-# PHASE 06 — Frontend Development
-
-**Objective:** Build the complete user interface and integrate the application APIs.
-
-### Public Pages
-
-- [ ] Landing page.
-- [ ] About page.
-- [ ] Features page.
-- [ ] Contact page.
-- [ ] Login page.
-- [ ] Registration page.
-
-### User Pages
-
-- [ ] User dashboard.
-- [ ] Diabetes prediction form.
-- [ ] Heart disease prediction form.
-- [ ] Prediction result page.
-- [ ] Prediction history.
-- [ ] Individual prediction report.
-- [ ] User profile.
-- [ ] Settings.
-
-### Admin Pages
-
-- [ ] Admin dashboard.
-- [ ] User management.
-- [ ] Prediction analytics.
-- [ ] Platform statistics.
-
-### UI/UX
-
-- [ ] Establish design system.
-- [ ] Implement responsive layouts.
-- [ ] Build reusable components.
-- [ ] Add charts and visualizations.
-- [ ] Implement loading states.
-- [ ] Implement error states.
-- [ ] Implement form validation.
-- [ ] Add empty states.
-- [ ] Ensure accessibility.
-
-### API Integration
-
-- [ ] Integrate authentication.
-- [ ] Integrate dashboard APIs.
-- [ ] Integrate prediction APIs.
-- [ ] Integrate prediction history.
-- [ ] Integrate admin APIs.
-
-### Deliverables
-- Complete responsive Next.js application.
-- User dashboard.
-- Admin dashboard.
-- Integrated prediction workflows.
-
-**Completion Criteria:** All core frontend workflows operate using real backend and ML services, without mocked production data.
-
----
-
-# PHASE 07 — Integration & Testing
-
-**Objective:** Verify the entire platform.
-
-### Backend Testing
-
-- [ ] Authentication tests.
-- [ ] Authorization tests.
-- [ ] API validation tests.
-- [ ] Database tests.
-- [ ] Prediction orchestration tests.
-- [ ] Error-handling tests.
-
-### ML Testing
-
-- [ ] Model loading tests.
-- [ ] Input validation tests.
-- [ ] Prediction consistency tests.
-- [ ] SHAP explanation tests.
-- [ ] Invalid input tests.
-
-### Frontend Testing
-
-- [ ] Page rendering tests.
-- [ ] Form validation tests.
-- [ ] Authentication workflow tests.
-- [ ] Dashboard tests.
-- [ ] Prediction workflow tests.
-- [ ] Responsive UI tests.
-
-### End-to-End Testing
-
-- [ ] Registration to dashboard.
-- [ ] Login to protected pages.
-- [ ] Diabetes prediction workflow.
-- [ ] Heart disease prediction workflow.
-- [ ] Prediction history workflow.
-- [ ] Admin access workflow.
-
-### Security Testing
-
-- [ ] Unauthorized access.
-- [ ] Invalid JWT.
-- [ ] Role-based access.
-- [ ] Input manipulation.
-- [ ] Sensitive information exposure.
-
-### Deliverables
-- Test reports.
-- Bug fixes.
-- Stable integrated application.
-
-**Completion Criteria:** All critical user workflows pass testing and no known critical security issues remain.
-
----
-
-# PHASE 08 — Deployment & Production Preparation
-
-**Objective:** Prepare MediPredict for deployment.
+Build the main application API.
 
 ### Tasks
 
-- [ ] Prepare production environment variables.
-- [ ] Configure production database.
-- [ ] Configure database migrations.
-- [ ] Deploy Next.js frontend.
-- [ ] Deploy Express backend.
-- [ ] Deploy FastAPI ML service.
-- [ ] Configure CORS.
-- [ ] Configure service authentication.
-- [ ] Configure HTTPS.
-- [ ] Verify production APIs.
-- [ ] Test production prediction workflows.
-- [ ] Configure monitoring and logging.
-- [ ] Prepare backup strategy.
+- Initialize Node.js.
+- Configure Express.js.
+- Configure routes.
+- Configure controllers.
+- Configure services.
+- Configure middleware.
+- Configure validation.
+- Configure error handling.
+- Configure CORS.
+- Create `/api/v1`.
+- Create health endpoint.
 
-### Deliverables
-- Deployed frontend.
-- Deployed Express API.
-- Deployed FastAPI service.
-- Production database.
-- Deployment documentation.
+### Status
 
-**Completion Criteria:** All deployed services communicate successfully and core workflows operate in production.
+**In Progress**
 
----
+------------------------------------------------------------------------
 
-# PHASE 09 — Final Documentation & Project Delivery
+# Phase 04 — MongoDB + Mongoose
 
-**Objective:** Complete professional project documentation and final delivery.
+### Goal
+
+Connect the application backend to MongoDB.
 
 ### Tasks
 
-- [ ] Finalize README.md.
-- [ ] Finalize PRD.md.
-- [ ] Finalize PHASE.md.
-- [ ] Finalize ARCHITECTURE.md.
-- [ ] Finalize API_DOCUMENTATION.md.
-- [ ] Finalize DATABASE_SCHEMA.md.
-- [ ] Document ML methodology.
-- [ ] Document model evaluation results.
-- [ ] Document installation instructions.
-- [ ] Document environment variables.
-- [ ] Prepare screenshots.
-- [ ] Prepare project demonstration.
-- [ ] Prepare final presentation.
+- Configure `MONGODB_URI`.
+- Create Mongoose connection.
+- Create User model.
+- Create Profile model.
+- Create Prediction model.
+- Create ModelVersion model.
+- Create AuditLog model.
+- Add validation.
+- Add indexes.
+- Test CRUD operations.
 
-### Deliverables
-- Complete documentation.
-- GitHub repository.
-- Working project demonstration.
-- Final project report.
+### Status
 
-**Completion Criteria:** Another developer can understand, install, run, and maintain the project using the documentation.
+**Planned**
 
----
+------------------------------------------------------------------------
 
-# Final Development Sequence
+# Phase 05 — Better Auth + JWT Plugin
 
-| Phase | Focus |
-|---|---|
-| 00 | Project Foundation |
-| 01 | Database & Authentication |
-| 02 | Dataset Research & Preparation |
-| 03 | Machine Learning Development |
-| 04 | FastAPI ML Service |
-| 05 | Express Backend |
-| 06 | Frontend Development |
-| 07 | Integration & Testing |
-| 08 | Deployment |
-| 09 | Final Documentation |
+### Goal
 
----
+Implement authentication and authorization.
 
-## Project Completion Definition
+### Tasks
 
-MediPredict is considered complete when:
+- Configure Better Auth.
+- Configure MongoDB integration according to the selected Better Auth
+  adapter/storage approach.
+- Configure authentication routes.
+- Implement session handling.
+- Configure JWT Plugin.
+- Implement API token verification.
+- Implement RBAC.
+- Protect user/admin endpoints.
 
-1. Diabetes and heart disease models are validated.
-2. Both ML services work through FastAPI.
-3. Express handles the main application APIs.
-4. Better Auth and JWT-based service authentication work correctly.
-5. PostgreSQL stores application data reliably.
-6. Users can receive explainable risk predictions.
-7. Users can access their prediction history.
-8. Admins can monitor platform activity.
-9. All core workflows pass integration testing.
-10. The application is deployed and documented.
+### Roles
 
-**Development Rule:** Never skip phases or integrate unvalidated ML predictions into the production workflow.
+``` text
+USER
+DOCTOR
+ADMIN
+```
 
----
+### Status
 
-**End of PHASE.md**
+**Planned**
+
+------------------------------------------------------------------------
+
+# Phase 06 — Application REST API
+
+### Goal
+
+Build the complete Express API.
+
+### Core APIs
+
+``` text
+/api/v1/auth
+/api/v1/profile
+/api/v1/predictions
+/api/v1/dashboard
+/api/v1/models
+/api/v1/admin
+```
+
+### Tasks
+
+- Auth API
+- Profile API
+- Prediction history API
+- Dashboard API
+- Model metadata API
+- Admin API
+- Validation
+- Error responses
+- Authorization
+
+### Status
+
+**Planned**
+
+------------------------------------------------------------------------
+
+# Phase 07 — Dataset Preparation
+
+### Goal
+
+Prepare the ML datasets.
+
+### Tasks
+
+- Collect approved datasets.
+- Verify dataset sources.
+- Clean missing values.
+- Detect invalid values.
+- Perform EDA.
+- Analyze distributions.
+- Define target variables.
+- Select features.
+- Split data.
+- Build preprocessing pipeline.
+
+### Initial datasets
+
+- Pima Indians Diabetes Database
+- UCI Heart Disease Dataset
+
+Dataset source and licensing details must be verified before final
+publication.
+
+### Status
+
+**Planned**
+
+------------------------------------------------------------------------
+
+# Phase 08 — Diabetes ML Model
+
+### Goal
+
+Train and evaluate diabetes prediction models.
+
+### Tasks
+
+- Preprocess data.
+- Train baseline models.
+- Train advanced models.
+- Compare metrics.
+- Select model.
+- Tune model.
+- Evaluate on holdout data.
+- Save model.
+- Save preprocessing artifacts.
+- Document model version.
+
+### Metrics
+
+- Accuracy
+- Precision
+- Recall
+- F1-score
+- ROC-AUC
+- Confusion matrix
+
+### Status
+
+**Planned**
+
+------------------------------------------------------------------------
+
+# Phase 09 — Heart Disease ML Model
+
+### Goal
+
+Train and evaluate heart disease prediction models.
+
+### Tasks
+
+- Preprocess data.
+- Train candidate models.
+- Compare metrics.
+- Tune selected model.
+- Evaluate.
+- Export model.
+- Export preprocessing artifacts.
+- Create model metadata.
+
+### Status
+
+**Planned**
+
+------------------------------------------------------------------------
+
+# Phase 10 — FastAPI ML Service
+
+### Goal
+
+Expose ML inference through a dedicated Python service.
+
+### Endpoints
+
+``` text
+GET  /health
+GET  /models
+POST /predict/diabetes
+POST /predict/heart-disease
+```
+
+### Tasks
+
+- FastAPI setup
+- Pydantic schemas
+- Model loading
+- Input validation
+- Prediction service
+- Error handling
+- Health checks
+
+### Status
+
+**Planned**
+
+------------------------------------------------------------------------
+
+# Phase 11 — SHAP Explainability
+
+### Goal
+
+Add model explanations.
+
+### Endpoints
+
+``` text
+POST /explain/diabetes
+POST /explain/heart-disease
+```
+
+### Tasks
+
+- Integrate SHAP.
+- Define explanation format.
+- Generate feature contributions.
+- Normalize output for frontend consumption.
+- Test explanation stability.
+- Clearly label explanations as model interpretation.
+
+### Status
+
+**Planned**
+
+------------------------------------------------------------------------
+
+# Phase 12 — Frontend Integration
+
+### Goal
+
+Connect Next.js with Express APIs.
+
+### Tasks
+
+- API client.
+- Authentication flow.
+- Profile flow.
+- Prediction forms.
+- Prediction result UI.
+- SHAP visualization.
+- History page.
+- Dashboard analytics.
+- Error/loading states.
+
+### Status
+
+**Planned**
+
+------------------------------------------------------------------------
+
+# Phase 13 — Testing & Validation
+
+### Goal
+
+Validate the entire system.
+
+### Tests
+
+``` text
+Frontend
+   |
+Express API
+   |
+MongoDB
+   |
+FastAPI
+   |
+ML Models
+   |
+SHAP
+```
+
+### Tasks
+
+- Unit tests
+- API tests
+- Integration tests
+- Validation tests
+- Authentication tests
+- Authorization tests
+- ML evaluation
+- End-to-end testing
+
+### Status
+
+**Planned**
+
+------------------------------------------------------------------------
+
+# Phase 14 — Deployment
+
+### Goal
+
+Prepare the system for deployment.
+
+### Tasks
+
+- Production environment variables.
+- Production MongoDB.
+- Deploy Next.js.
+- Deploy Express.
+- Deploy FastAPI.
+- Configure HTTPS.
+- Configure CORS.
+- Configure secure secrets.
+- Configure monitoring.
+- Final documentation.
+
+### Status
+
+**Planned**
+
+------------------------------------------------------------------------
+
+# Final Completion Criteria
+
+MediPredict is complete when:
+
+- Frontend is functional.
+- Express API is functional.
+- MongoDB persistence works.
+- Better Auth works.
+- RBAC works.
+- FastAPI inference works.
+- Diabetes model works.
+- Heart disease model works.
+- SHAP explanations work.
+- Prediction history works.
+- Dashboard works.
+- Admin features work.
+- Core tests pass.
+- Documentation is synchronized with implementation.

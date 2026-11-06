@@ -1,8 +1,8 @@
-const app = require("./src/app.js")
-const port = 5000
+import "dotenv/config";
+import app from "./src/app.js";
 
+const PORT = process.env.PORT || 5000;
 
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+app.listen(PORT, () => {
+  console.log(`MediPredict API running on port ${PORT}`);
+});

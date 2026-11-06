@@ -11,7 +11,8 @@
   <img src="https://img.shields.io/badge/Frontend-Next.js-black?style=flat-square&logo=next.js" alt="Next.js" />
   <img src="https://img.shields.io/badge/Backend-Express.js-404D59?style=flat-square&logo=express" alt="Express.js" />
   <img src="https://img.shields.io/badge/ML-FastAPI-009688?style=flat-square&logo=fastapi" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/Database-PostgreSQL-4169E1?style=flat-square&logo=postgresql" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Database-MongoDB-47A248?style=flat-square&logo=mongodb" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/ODM-Mongoose-880000?style=flat-square" alt="Mongoose" />
   <img src="https://img.shields.io/badge/Explainable%20AI-SHAP-orange?style=flat-square" alt="SHAP" />
 </p>
 
@@ -28,7 +29,7 @@ The platform focuses on two initial prediction domains:
 
 Unlike conventional prediction systems that return only a numerical result, MediPredict aims to provide interpretable insights into how individual health parameters influence model predictions.
 
-By combining a modern web application, a dedicated machine learning service, and an explainability layer, MediPredict aims to bridge the gap between machine learning predictions and understandable healthcare insights.
+By combining a modern web application, a dedicated application backend, a separate machine learning service, and an explainability layer, MediPredict aims to bridge the gap between machine learning predictions and understandable healthcare insights.
 
 ### Our Vision
 
@@ -53,8 +54,10 @@ To make AI-driven health risk assessment more accessible, transparent, and under
 - [Environment Configuration](#environment-configuration)
 - [Development Roadmap](#development-roadmap)
 - [Security & Privacy](#security--privacy)
+- [Testing Strategy](#testing-strategy)
 - [Contributing](#contributing)
 - [License](#license)
+- [Disclaimer](#disclaimer)
 
 ---
 
@@ -65,6 +68,7 @@ To make AI-driven health risk assessment more accessible, transparent, and under
 Provide structured health information and receive machine learning-based risk assessments.
 
 **Initial prediction modules:**
+
 - Diabetes risk assessment.
 - Heart disease risk assessment.
 - Model-generated prediction scores.
@@ -105,7 +109,7 @@ A dedicated administrative interface designed for platform management.
 - Prediction statistics.
 - Administrative access controls.
 
-*These capabilities describe the intended product scope. Individual modules will become available as implementation progresses.*
+> These capabilities describe the intended product scope. Individual modules will become available as implementation progresses.
 
 ---
 
@@ -113,10 +117,23 @@ A dedicated administrative interface designed for platform management.
 
 MediPredict follows a modular, service-oriented architecture with a dedicated application backend and an independent machine learning service.
 
+### Architecture Overview
+
+The following diagram illustrates the overall architecture and communication flow between the frontend, application backend, authentication layer, MongoDB database, and machine learning service.
+
+<p align="center">
+  <img
+    src="MediPredict Architecture Overview.png"
+    alt="MediPredict Architecture Overview"
+    width="100%"
+  />
+</p>
+
 ### High-Level Architecture
 
 ```mermaid
 flowchart TB
+
     U([User])
 
     subgraph CLIENT["Presentation Layer"]
@@ -126,11 +143,11 @@ flowchart TB
     subgraph APP["Application Layer"]
         API["Node.js + Express.js<br/>Main REST API"]
         AUTH["Better Auth<br/>Authentication"]
-        ORM["Prisma ORM"]
+        ODM["Mongoose ODM"]
     end
 
     subgraph DATA["Data Layer"]
-        DB[("Supabase<br/>PostgreSQL")]
+        DB[("MongoDB<br/>Database")]
     end
 
     subgraph ML["Machine Learning Layer"]
@@ -142,8 +159,8 @@ flowchart TB
     U --> FE
     FE --> API
     API --> AUTH
-    API --> ORM
-    ORM --> DB
+    API --> ODM
+    ODM --> DB
     API <-->|Internal REST API| FAST
     FAST --> MODEL
     MODEL --> SHAP
@@ -154,16 +171,17 @@ flowchart TB
 - Separation of concerns.
 - Independent application and ML services.
 - REST-based service communication.
-- Centralized relational data management.
+- Document-oriented data management.
 - Modular and maintainable codebase.
 - Secure authentication and authorization.
 - Independent service development and deployment.
+- Clear separation between application logic and ML logic.
 
 ---
 
 ## Technology Stack
 
-The platform uses a modern JavaScript, TypeScript-compatible, Python, and PostgreSQL ecosystem.
+The platform uses a modern JavaScript, Python, MongoDB, and machine learning ecosystem.
 
 | Layer | Technology | Purpose |
 |---|---|---|
@@ -172,14 +190,13 @@ The platform uses a modern JavaScript, TypeScript-compatible, Python, and Postgr
 | Styling | Tailwind CSS | Responsive styling |
 | Main Backend | Node.js | Application runtime |
 | Backend Framework | Express.js | REST API |
-| ML Backend | Python | ML processing |
-| ML Framework | FastAPI | ML service APIs |
-| Database | PostgreSQL | Relational data storage |
-| Database Hosting | Supabase | Managed PostgreSQL |
-| ORM | Prisma | Database access |
+| Database | MongoDB | Document database |
+| Database ODM | Mongoose | MongoDB data modeling |
 | Authentication | Better Auth | Authentication and sessions |
 | Token Authentication | JWT Plugin | API and service authentication |
-| Password Security | Better Auth / scrypt | Password hashing |
+| Password Security | Better Auth | Password hashing and authentication security |
+| ML Backend | Python | ML processing |
+| ML Framework | FastAPI | ML service APIs |
 | ML Framework | Scikit-learn | Machine learning |
 | Gradient Boosting | XGBoost | Predictive modeling |
 | Explainable AI | SHAP | Model interpretation |
@@ -217,10 +234,11 @@ MediPredict separates application-level business logic from machine learning ope
 - Health data management.
 - Prediction request orchestration.
 - Communication with FastAPI.
-- Database operations through Prisma.
+- Database operations through Mongoose.
 - Prediction history.
 - Administrative operations.
-- Request validation and error handling.
+- Request validation.
+- Error handling.
 
 Express.js is the primary application backend.
 
@@ -239,18 +257,21 @@ Express.js is the primary application backend.
 
 FastAPI is an independent ML microservice, not a replacement for Express.js.
 
-### Database — Supabase PostgreSQL + Prisma
+### Database — MongoDB + Mongoose
 
 **Responsibility:** Persistent application data.
 
 - User information.
-- Authentication records.
+- Authentication-related records.
 - Health profiles.
 - Prediction records.
 - Prediction results.
 - Historical assessment data.
+- Application metadata.
 
-Better Auth and application models use the same PostgreSQL database through the configured Prisma integration.
+**MongoDB** provides the document database, while **Mongoose** provides schema definition, validation, relationships/references, middleware, and database interaction from the Express.js backend.
+
+The application backend is responsible for all application database operations. The FastAPI ML service does not directly manage the application's MongoDB data.
 
 ---
 
@@ -260,23 +281,27 @@ MediPredict uses supervised machine learning to develop its initial prediction m
 
 ### Prediction Domains
 
-**Diabetes Risk Prediction**
+### Diabetes Risk Prediction
 
 Potential dataset:
+
 - Pima Indians Diabetes Database.
 
 Candidate algorithms:
+
 - Logistic Regression.
 - Random Forest.
 - Support Vector Machine.
 - XGBoost.
 
-**Heart Disease Risk Prediction**
+### Heart Disease Risk Prediction
 
 Potential dataset:
+
 - UCI Heart Disease Dataset.
 
 Candidate algorithms:
+
 - Logistic Regression.
 - Random Forest.
 - Support Vector Machine.
@@ -286,6 +311,7 @@ Candidate algorithms:
 
 ```mermaid
 flowchart TD
+
     A["Dataset Collection"] --> B["Data Cleaning"]
     B --> C["Exploratory Data Analysis"]
     C --> D["Feature Engineering"]
@@ -346,10 +372,10 @@ Patient Health Parameters
      SHAP Explainer
           |
           v
- Feature Contributions
+   Feature Contributions
           |
           v
-  Explainable Result
+   Explainable Result
 ```
 
 SHAP explanations describe model behavior, not clinical causation.
@@ -358,21 +384,24 @@ SHAP explanations describe model behavior, not clinical causation.
 
 ## Database Design
 
-**Database:** PostgreSQL  
-**Infrastructure:** Supabase  
-**ORM:** Prisma
+**Database:** MongoDB  
+**ODM:** Mongoose
 
-### Planned Core Entities
+### Planned Core Collections
 
-| Entity | Description |
+| Collection | Description |
 |---|---|
 | User | Application user information |
-| Session | Authentication sessions |
+| Session | Authentication/session information |
 | Account | Authentication account records |
-| Verification | Verification records |
+| Verification | Verification-related records |
 | HealthProfile | User health information |
 | Prediction | Prediction request and metadata |
 | PredictionResult | Model output and result details |
+| ModelVersion | ML model version information |
+| AuditLog | Important application activity records |
+
+> The exact collections and fields will be finalized during database implementation and Better Auth integration.
 
 ### Database Architecture
 
@@ -380,16 +409,37 @@ SHAP explanations describe model behavior, not clinical causation.
 Express.js Application
          |
          v
-      Prisma ORM
+   Mongoose ODM
          |
          v
-  PostgreSQL Database
+     MongoDB
          |
          v
-       Supabase
+   MongoDB Atlas
 ```
 
-The final schema, relationships, constraints, and indexing strategy will be documented as database implementation progresses.
+MongoDB will be used as the primary application database.
+
+Mongoose will provide:
+
+- Schema definitions.
+- Validation.
+- Model abstraction.
+- Query operations.
+- Middleware/hooks where required.
+- References between related documents.
+- Index configuration.
+
+### Data Relationship Strategy
+
+MongoDB uses a document-oriented data model. MediPredict will use a combination of:
+
+- Embedded documents where data is tightly coupled.
+- Referenced documents where entities require independent lifecycle management.
+- Indexed fields for frequently queried data.
+- Appropriate validation for application-level data integrity.
+
+The final schema, indexes, validation rules, and document relationships will be documented in `DATABASE_SCHEMA.md`.
 
 ---
 
@@ -423,7 +473,7 @@ MediPredict uses **Better Auth with its JWT Plugin**.
 | ADMIN | Administrative features and platform management |
 | DOCTOR | Optional future healthcare professional functionality |
 
-Authentication sessions and JWT-based API authentication are handled according to their respective security requirements.
+Authentication and authorization will be enforced by the application backend according to the configured Better Auth and JWT architecture.
 
 ---
 
@@ -466,7 +516,7 @@ http://localhost:8000
 | POST | `/explain/diabetes` | Diabetes SHAP explanation |
 | POST | `/explain/heart-disease` | Heart disease SHAP explanation |
 
-These are proposed API contracts. Implementation and request/response schemas will be documented separately.
+These are proposed API contracts. Implementation and request/response schemas will be documented separately in `API_DOCUMENTATION.md`.
 
 ### Service Communication
 
@@ -481,7 +531,7 @@ Express.js
    | Input Validation
    | Business Logic
    |
-   +-----------> PostgreSQL
+   +-----------> MongoDB
    |
    | Internal REST Request
    v
@@ -513,15 +563,45 @@ MediPredict/
 │
 ├── frontend/
 │   ├── public/
+│   │   ├── images/
+│   │   └── icons/
+│   │
 │   ├── src/
 │   │   ├── app/
+│   │   │   ├── layout.js
+│   │   │   ├── page.js
+│   │   │   ├── loading.js
+│   │   │   ├── error.js
+│   │   │   ├── not-found.js
+│   │   │   ├── login/
+│   │   │   ├── register/
+│   │   │   ├── dashboard/
+│   │   │   ├── predictions/
+│   │   │   ├── diabetes/
+│   │   │   ├── heart-disease/
+│   │   │   ├── profile/
+│   │   │   └── admin/
+│   │   │
 │   │   ├── components/
+│   │   │   ├── ui/
+│   │   │   ├── layout/
+│   │   │   ├── dashboard/
+│   │   │   ├── prediction/
+│   │   │   ├── charts/
+│   │   │   └── common/
+│   │   │
 │   │   ├── features/
+│   │   │   ├── auth/
+│   │   │   ├── diabetes/
+│   │   │   ├── heart-disease/
+│   │   │   ├── dashboard/
+│   │   │   └── profile/
+│   │   │
 │   │   ├── hooks/
 │   │   ├── lib/
 │   │   ├── services/
-│   │   ├── types/
-│   │   └── utils/
+│   │   └── styles/
+│   │
 │   ├── package.json
 │   └── .env.local
 │
@@ -533,11 +613,10 @@ MediPredict/
 │   │   ├── routes/
 │   │   ├── services/
 │   │   ├── validators/
+│   │   ├── models/
 │   │   ├── utils/
 │   │   └── server.js
 │   │
-│   ├── prisma/
-│   │   └── schema.prisma
 │   ├── package.json
 │   └── .env
 │
@@ -558,10 +637,16 @@ MediPredict/
 │   ├── diabetes/
 │   └── heart-disease/
 │
+├── assets/
+│   └── MediPredict Architecture Overview.png
+│
 ├── docs/
+│   ├── PRD.md
+│   ├── PHASE.md
 │   ├── ARCHITECTURE.md
 │   ├── API_DOCUMENTATION.md
-│   └── DATABASE_SCHEMA.md
+│   ├── DATABASE_SCHEMA.md
+│   └── DESIGN.md
 │
 ├── tests/
 │   ├── frontend/
@@ -569,6 +654,7 @@ MediPredict/
 │   └── ml-service/
 │
 ├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
@@ -584,7 +670,8 @@ Ensure the following tools are installed:
 - npm
 - Python 3
 - Git
-- Supabase PostgreSQL access
+- MongoDB
+- MongoDB Atlas account or local MongoDB instance
 
 ### 1. Clone the Repository
 
@@ -625,14 +712,17 @@ http://localhost:5000
 
 ### 4. Database Setup
 
-Configure the PostgreSQL connection before running Prisma.
+Configure MongoDB before starting the backend.
 
-```bash
-npx prisma generate
-npx prisma migrate dev
+For MongoDB Atlas, create a database and obtain the MongoDB connection string.
+
+Example:
+
+```text
+mongodb+srv://<username>:<password>@<cluster-url>/<database-name>
 ```
 
-Run these commands from the backend directory.
+The Express.js backend will connect to MongoDB through Mongoose.
 
 ### 5. ML Service Setup
 
@@ -683,8 +773,7 @@ NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
 NODE_ENV=development
 PORT=5000
 
-DATABASE_URL=your_supabase_database_url
-DIRECT_URL=your_supabase_direct_connection_url
+MONGODB_URI=your_mongodb_connection_string
 
 BETTER_AUTH_SECRET=your_secure_auth_secret
 BETTER_AUTH_URL=http://localhost:5000
@@ -704,13 +793,14 @@ JWT_AUDIENCE=your_configured_audience
 JWT_PUBLIC_KEY=your_configured_public_key
 ```
 
-**Important:**
+### Important
 
 - Never commit environment files.
 - Use strong, randomly generated secrets.
 - Never expose private credentials in frontend code.
 - Configure JWT verification according to the actual Better Auth JWT Plugin signing configuration.
 - Restrict internal ML service access to authorized callers.
+- Do not expose MongoDB credentials in frontend code.
 
 ---
 
@@ -721,7 +811,7 @@ JWT_PUBLIC_KEY=your_configured_public_key
 | 01 | Project initialization | In Progress |
 | 02 | Next.js frontend setup | In Progress |
 | 03 | Express.js backend setup | In Progress |
-| 04 | PostgreSQL & Prisma integration | Planned |
+| 04 | MongoDB & Mongoose integration | Planned |
 | 05 | Better Auth integration | Planned |
 | 06 | Application REST APIs | Planned |
 | 07 | ML dataset preparation | Planned |
@@ -745,11 +835,13 @@ MediPredict aims to follow these security principles:
 - Role-based access control.
 - Server-side input validation.
 - Protected API endpoints.
-- Secure database connections.
+- Secure MongoDB connections.
 - Environment-based secret management.
 - Rate limiting and request protection.
 - Restricted internal service communication.
 - Appropriate handling of sensitive health information.
+- Least-privilege database access.
+- Secure password and token management.
 
 Future deployment must also account for applicable privacy and data protection requirements.
 
@@ -763,7 +855,7 @@ Testing will cover all major application layers.
 |---|---|
 | Frontend | Component and UI testing |
 | Express API | Endpoint and integration testing |
-| Database | Schema and data integrity |
+| MongoDB | Schema, validation and data integrity |
 | FastAPI | Request and response validation |
 | ML Models | Performance and generalization |
 | Integration | Cross-service communication |
@@ -785,6 +877,8 @@ Contributions, suggestions, and technical discussions are welcome.
 5. Document API changes.
 6. Test important functionality before merging.
 7. Never commit secrets or sensitive datasets.
+8. Keep MongoDB data models organized through Mongoose schemas.
+9. Do not introduce direct database access into the ML service without architectural justification.
 
 ### Commit Convention
 
@@ -805,14 +899,17 @@ Examples:
 git commit -m "feat: add diabetes prediction API"
 git commit -m "feat: integrate SHAP explainability"
 git commit -m "fix: resolve authentication middleware"
-git commit -m "docs: update API documentation"
+git commit -m "docs: update database documentation"
+git commit -m "chore: configure MongoDB connection"
 ```
 
 ---
 
 ## License
 
-The project's license will be specified before public distribution.
+This project is licensed under the **MIT License**.
+
+See the [`LICENSE`](./LICENSE) file for details.
 
 ---
 

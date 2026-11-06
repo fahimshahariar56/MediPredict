@@ -1,392 +1,456 @@
-# MediPredict — Product Requirements Document (PRD)
+# MediPredict — Product Requirements Document
 
-**Project Name:** MediPredict  
-**Product Type:** Explainable AI-Based Healthcare Risk Prediction Platform  
-**Document Version:** 1.0  
-**Status:** Development  
-**Primary Prediction Models:** Diabetes & Heart Disease
+## 1. Product Overview
 
----
+**MediPredict** is an Explainable AI-based healthcare risk prediction
+web application.
 
-## 1. Project Overview
+The system accepts selected health-related inputs and estimates the
+probability/risk level of:
 
-MediPredict is an AI-powered healthcare risk prediction platform designed to help users understand their potential risk of developing diabetes and heart disease through machine learning.
+1.  Diabetes
+2.  Heart Disease
 
-The platform collects relevant health information from users, processes the information using trained machine learning models, and generates risk predictions with explainable AI (XAI).
+The platform is designed as an academic and research prototype.
 
-MediPredict also provides personalized health dashboards, prediction history, and administrative analytics.
+It does not diagnose disease.
 
-**Important:** MediPredict is an educational and health-risk assessment tool. It does not provide medical diagnoses or replace professional medical advice.
+------------------------------------------------------------------------
 
 ## 2. Problem Statement
 
-Many people are unaware of their potential risk factors for common chronic diseases.
+Many Machine Learning prediction systems provide only a final prediction
+without explaining the factors behind the result.
 
-Traditional healthcare assessments may require appointments, laboratory tests, and professional consultations.
+MediPredict aims to combine:
 
-MediPredict aims to provide an accessible platform where users can:
+- Risk prediction
+- Probability
+- Risk classification
+- Prediction history
+- Health analytics
+- Explainable AI
+- Modern web application architecture
 
-- Submit relevant health information.
-- Estimate diabetes risk.
-- Estimate heart disease risk.
-- Understand the factors influencing their predictions.
-- Track previous prediction results.
-- Learn about potential health risk factors.
+The primary research/engineering challenge is integrating a Machine
+Learning pipeline into a secure, maintainable web application while
+keeping ML and application responsibilities separated.
 
-## 3. Project Objectives
+------------------------------------------------------------------------
 
-1. Develop reliable ML models for diabetes and heart disease risk prediction.
-2. Integrate machine learning with a modern web application.
-3. Implement explainable AI using SHAP.
-4. Provide secure user authentication and authorization.
-5. Store user profiles and prediction history.
-6. Develop an administrative dashboard.
-7. Build a scalable and maintainable architecture.
+## 3. Goals
+
+### Primary Goals
+
+- Build a complete healthcare risk prediction web application.
+- Train and evaluate disease-specific ML models.
+- Expose ML inference through FastAPI.
+- Build application APIs using Express.js.
+- Store application data in MongoDB using Mongoose.
+- Implement authentication and RBAC with Better Auth and JWT Plugin.
+- Provide SHAP-based explanations.
+- Store prediction history.
+- Provide dashboards and analytics.
+- Maintain clear separation between frontend, application backend, and
+  ML service.
+
+### Academic Goals
+
+- Learn healthcare dataset preprocessing.
+- Perform EDA.
+- Perform feature engineering.
+- Train supervised ML models.
+- Compare multiple algorithms.
+- Evaluate model performance.
+- Learn REST API development.
+- Learn service-to-service integration.
+- Implement Explainable AI.
+
+------------------------------------------------------------------------
 
 ## 4. Target Users
 
-### 4.1 User
+### User
 
-The primary user of MediPredict.
+Can:
 
-Responsibilities:
-- Register and log in.
-- Manage personal profiles.
-- Submit health information.
-- Request diabetes risk predictions.
-- Request heart disease risk predictions.
-- View prediction results.
-- Understand SHAP-based explanations.
-- Access prediction history.
-- View personal dashboard.
+- Register
+- Login
+- Manage profile
+- Provide health information
+- Request a prediction
+- View risk probability
+- View risk level
+- View explanation
+- View prediction history
+- View dashboard analytics
 
-### 4.2 Admin
+### Doctor / Health Professional
 
-Responsible for platform management.
+Optional future role.
 
-Responsibilities:
-- Access administrative dashboard.
-- View registered users.
-- Monitor prediction activities.
-- View platform analytics.
-- Monitor system usage.
-- Manage user accounts and platform operations.
+Can potentially:
 
-### 4.3 Doctor (Optional / Future)
+- Review authorized prediction history
+- Review prediction reports
 
-A potential future role.
+### Admin
 
-Responsibilities:
-- Review user-authorized health information.
-- View prediction reports.
-- Provide professional feedback.
+Can:
 
-Doctor functionality is not required for the initial MVP.
+- Manage users
+- View prediction statistics
+- View model metadata
+- View model performance
+- Monitor system activity
 
-## 5. Core Features
+------------------------------------------------------------------------
 
-### 5.1 Authentication & Authorization
+## 5. Functional Requirements
 
-- User registration.
-- User login and logout.
-- Session management.
-- Secure password handling.
-- Role-based access control.
-- Protected application routes.
-- JWT-based communication with external services.
+### Authentication
 
-**Authentication Technology:**
-- Better Auth
-- Better Auth JWT Plugin
-- JWKS
-- Prisma Adapter
+- Registration
+- Login
+- Logout
+- Session management
+- JWT-based API authentication where required
+- Role-based authorization
+- Protected routes
 
-### 5.2 User Dashboard
+Roles:
 
-The dashboard should provide:
+``` text
+USER
+DOCTOR
+ADMIN
+```
 
-- Welcome section.
-- Total predictions.
-- Latest prediction.
-- Diabetes risk overview.
-- Heart disease risk overview.
-- Recent prediction history.
-- Health-related information.
+### User Profile
 
-### 5.3 Diabetes Risk Prediction
+Profile may contain:
 
-Users submit the required health information.
-
-Initial dataset:
-- Pima Indians Diabetes Dataset.
-
-Potential input features:
-- Pregnancies
-- Glucose
-- Blood Pressure
-- Skin Thickness
-- Insulin
-- BMI
-- Diabetes Pedigree Function
+- Name
 - Age
+- Gender
+- Basic health information
+- Optional profile metadata
 
-Expected output:
-- Predicted risk category.
-- Model probability or score, if properly calibrated and validated.
-- SHAP-based feature explanations.
-- Prediction timestamp.
+Only required information should be collected.
 
-### 5.4 Heart Disease Risk Prediction
+### Diabetes Prediction
 
-Initial dataset:
-- UCI Heart Disease Dataset.
+The user submits supported diabetes features.
 
-Potential input features:
-- Age
-- Sex
-- Chest Pain Type
-- Resting Blood Pressure
-- Cholesterol
-- Fasting Blood Sugar
-- Resting ECG
-- Maximum Heart Rate
-- Exercise-Induced Angina
-- ST Depression
-- ST Slope
+The system:
 
-Expected output:
-- Predicted risk category.
-- Model probability or score, if properly calibrated and validated.
-- SHAP-based feature explanations.
-- Prediction timestamp.
+1.  Validates input.
+2.  Sends prediction request through Express.
+3.  Express calls FastAPI.
+4.  FastAPI loads the appropriate model.
+5.  Model returns prediction/probability.
+6.  SHAP explanation may be generated.
+7.  Express stores the result.
+8.  Frontend displays the result.
 
-The exact feature definitions, units, encoding, and required fields must follow the selected dataset and validated model pipeline.
+### Heart Disease Prediction
 
-### 5.5 Explainable AI (XAI)
+Same general workflow applies using the heart disease model and feature
+schema.
 
-MediPredict will use SHAP to explain model predictions.
+### Prediction History
 
-Features:
-- Identify influential input features.
-- Show positive and negative feature contributions.
-- Display understandable visual explanations.
-- Provide a summary of important risk factors.
+The system stores:
 
-The explanation must reflect the actual model output, not fabricated medical reasoning.
+- Prediction ID
+- User ID
+- Disease type
+- Input summary
+- Prediction result
+- Probability
+- Risk level
+- Model version
+- Explanation summary
+- Timestamp
 
-### 5.6 Prediction History
+Sensitive raw health inputs should be handled carefully.
 
-Users can:
-- View previous predictions.
-- View prediction dates.
-- Open individual prediction reports.
-- Compare previous results.
-- Review associated explanations.
+### Dashboard
 
-### 5.7 Admin Dashboard
+Dashboard may show:
 
-Admin dashboard includes:
-- Total registered users.
-- Total diabetes predictions.
-- Total heart disease predictions.
-- Recent platform activity.
-- Prediction statistics.
-- User management.
+- Total predictions
+- Recent predictions
+- Disease-specific counts
+- Risk distribution
+- Prediction trends
+- Recent activity
 
-Only authorized administrators can access administrative functionality.
+### Admin
 
-## 6. Technology Stack
+Admin features:
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS |
-| UI Components | shadcn/ui |
-| Main Backend | Node.js + Express.js |
-| ML Backend | Python + FastAPI |
-| Database | PostgreSQL (Supabase Hosted) |
-| ORM | Prisma |
-| Authentication | Better Auth |
-| API Authentication | JWT Plugin + JWKS |
-| Password Hashing | Better Auth built-in scrypt |
-| ML Libraries | Scikit-learn, XGBoost |
-| Explainability | SHAP |
-| API Communication | REST API |
-| Version Control | Git + GitHub |
+- User list
+- User status
+- Prediction statistics
+- Model information
+- Model performance
+- Audit information
 
-## 7. System Architecture Overview
+------------------------------------------------------------------------
 
-MediPredict follows a service-oriented architecture.
-
-### Frontend
-Next.js handles:
-- User interfaces.
-- Dashboard rendering.
-- Forms.
-- Authentication interfaces.
-- Prediction result visualization.
-
-### Express Backend
-Node.js + Express.js is the primary application backend.
-
-Responsibilities:
-- REST API development.
-- Authentication integration.
-- Authorization.
-- User management.
-- Request validation.
-- Database operations.
-- Prediction request orchestration.
-- Prediction history.
-- Admin operations.
-
-### FastAPI ML Service
-Python + FastAPI handles:
-- Dataset preprocessing.
-- ML model development.
-- Model training and evaluation.
-- Prediction inference.
-- SHAP explanations.
-- Model version management.
-
-FastAPI is exclusively responsible for ML-related services, not the main application backend.
-
-### Database
-Supabase-hosted PostgreSQL stores:
-- User-related application data.
-- Profiles.
-- Roles.
-- Prediction records.
-- Prediction results.
-- Relevant model metadata.
-
-Prisma ORM manages database access.
-
-## 8. Main User Workflow
-
-1. User opens MediPredict.
-2. User registers or logs in.
-3. User accesses the dashboard.
-4. User selects Diabetes or Heart Disease prediction.
-5. User completes the required health information form.
-6. Next.js sends the request to Express.
-7. Express validates the request.
-8. Express communicates with FastAPI.
-9. FastAPI processes the input.
-10. ML model generates the prediction.
-11. SHAP generates the explanation.
-12. FastAPI returns the result.
-13. Express stores the prediction in PostgreSQL.
-14. Frontend displays the result and explanation.
-
-## 9. Non-Functional Requirements
+## 6. Non-Functional Requirements
 
 ### Security
-- Secure authentication.
-- Role-based authorization.
-- Input validation.
-- Protected APIs.
-- Environment variable management.
-- Secure communication between services.
-- No sensitive information in application logs.
+
+- Secure authentication
+- RBAC
+- Input validation
+- API authorization
+- Secure secrets
+- Secure MongoDB connection
+- Rate limiting
+- CORS configuration
+- JWT verification
 
 ### Performance
-- Efficient database queries.
-- Optimized ML inference.
-- Responsive user interface.
-- Appropriate loading and error states.
 
-### Scalability
-- Independent frontend, backend, and ML services.
-- Modular code structure.
-- Reusable API services.
-- Maintainable database schema.
+- Fast API responses
+- Efficient MongoDB queries
+- Appropriate indexes
+- Efficient ML inference
+- Avoid unnecessary frontend requests
 
-### Usability
-- Clean healthcare-focused interface.
-- Responsive design.
-- Accessible forms.
-- Understandable prediction reports.
-- Clear medical disclaimers.
+### Reliability
 
-## 10. UI/UX Requirements
+- Standardized API responses
+- Error handling
+- Health checks
+- Service availability monitoring
 
-The platform should follow a premium healthcare SaaS design language.
+### Maintainability
 
-Design principles:
-- Clean white and light-blue backgrounds.
-- Spacious layouts.
-- Rounded cards.
-- Subtle shadows.
-- Minimal line icons.
-- Professional typography.
-- Consistent navigation.
-- Responsive desktop and mobile layouts.
-- Clear charts and data visualization.
+- Modular Express architecture
+- Separate ML service
+- Reusable frontend components
+- Clear API contracts
+- Documentation
+- Consistent naming
 
-All public, user, and admin pages must follow a consistent visual system.
+------------------------------------------------------------------------
 
-## 11. MVP Scope
+## 7. Explainable AI Requirements
 
-The initial release must include:
+MediPredict should not only return a prediction.
 
-- User authentication.
-- User dashboard.
-- Diabetes risk prediction.
-- Heart disease risk prediction.
-- SHAP explanations.
-- Prediction history.
-- Admin dashboard.
-- Secure API integration.
-- PostgreSQL database integration.
+For supported prediction requests, SHAP should help explain:
 
-Doctor functionality and advanced healthcare integrations are outside the initial MVP.
+- Which features influenced the result
+- Direction of influence where supported
+- Relative feature importance
 
-## 12. Data & ML Validation Requirements
+Example conceptual output:
 
-Before integrating ML predictions into the application:
+``` text
+Prediction:
+High Risk
 
-- Verify dataset sources and licensing.
-- Inspect dataset quality.
-- Handle missing and invalid values.
-- Perform exploratory data analysis.
-- Prevent data leakage.
-- Split data appropriately.
-- Evaluate models using suitable metrics.
-- Validate generalization.
-- Assess calibration if probabilities are displayed.
-- Test SHAP explanations.
+Probability:
+73.4%
 
-Do not present unvalidated model outputs as reliable medical risk estimates.
+Important contributing factors:
+1. Glucose
+2. BMI
+3. Blood Pressure
+```
 
-## 13. Safety & Medical Disclaimer
+The explanation must be presented as model interpretation, not medical
+advice.
 
-MediPredict is not a medical diagnostic system.
+------------------------------------------------------------------------
 
-All predictions must be presented as estimated risk assessments.
+## 8. ML Requirements
 
-The platform must:
-- Avoid definitive diagnostic statements.
-- Clearly communicate model limitations.
-- Encourage professional consultation.
-- Avoid suggesting treatment based solely on predictions.
-- Protect user health information.
+### Data Pipeline
 
-## 14. MVP Success Criteria
+``` text
+Raw Dataset
+   |
+   v
+Data Cleaning
+   |
+   v
+EDA
+   |
+   v
+Feature Engineering
+   |
+   v
+Train / Validation / Test
+   |
+   v
+Model Training
+   |
+   v
+Evaluation
+   |
+   v
+Model Selection
+   |
+   v
+Model Export
+   |
+   v
+FastAPI Inference
+```
 
-The MVP will be considered successful when:
+### Candidate Models
 
-- Users can securely register and log in.
-- Both prediction workflows operate correctly.
-- Validated ML models return reproducible outputs.
-- SHAP explanations correspond to actual predictions.
-- Results are stored correctly.
-- Users can access prediction history.
-- Admins can access authorized analytics.
-- Frontend, backend, database, and ML service work together.
-- Core workflows pass integration testing.
+Depending on dataset suitability:
 
----
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- XGBoost
+- Other appropriate baseline models
 
-**End of PRD.md**
+Model selection must be evidence-based using evaluation metrics.
+
+------------------------------------------------------------------------
+
+## 9. API Requirements
+
+### Express
+
+Base:
+
+``` text
+/api/v1
+```
+
+Domains:
+
+``` text
+/auth
+/users
+/profile
+/predictions
+/dashboard
+/models
+/admin
+```
+
+### FastAPI
+
+Base:
+
+``` text
+/
+```
+
+Endpoints:
+
+``` text
+GET  /health
+GET  /models
+POST /predict/diabetes
+POST /predict/heart-disease
+POST /explain/diabetes
+POST /explain/heart-disease
+```
+
+------------------------------------------------------------------------
+
+## 10. Database Requirements
+
+Database:
+
+**MongoDB**
+
+ODM:
+
+**Mongoose**
+
+Core collections:
+
+- users
+- sessions
+- accounts
+- verifications
+- healthProfiles
+- predictions
+- modelVersions
+- auditLogs
+
+Collection names may be adjusted during implementation.
+
+------------------------------------------------------------------------
+
+## 11. Architecture Boundary
+
+``` text
+Next.js
+   |
+   v
+Express.js
+   |
+   +---- MongoDB via Mongoose
+   |
+   +---- FastAPI
+             |
+             +---- ML Models
+             |
+             +---- SHAP
+```
+
+FastAPI must not become a second application backend.
+
+------------------------------------------------------------------------
+
+## 12. Out of Scope
+
+The following are not part of the initial scope:
+
+- Medical diagnosis
+- Treatment recommendation
+- Prescription
+- Emergency medical decision-making
+- Real clinical deployment
+- Hospital EHR integration
+- Real-time clinical monitoring
+- Autonomous medical decision-making
+
+------------------------------------------------------------------------
+
+## 13. Success Criteria
+
+The project is considered successful when:
+
+- Users can authenticate.
+- Users can submit valid prediction inputs.
+- Express can communicate with FastAPI.
+- FastAPI can return valid ML predictions.
+- Predictions are stored in MongoDB.
+- Prediction history works.
+- SHAP explanations are available for supported models.
+- Dashboard displays stored application data.
+- RBAC protects admin functionality.
+- Core API and ML flows are tested.
+- Documentation matches the implemented architecture.
+
+------------------------------------------------------------------------
+
+## 14. Future Scope
+
+Potential future work:
+
+- Additional diseases
+- Doctor dashboard
+- Model monitoring
+- Model drift detection
+- More advanced explainability
+- PDF reports
+- Cloud deployment
+- Advanced analytics
+- Research dataset comparison
+- Clinical validation research

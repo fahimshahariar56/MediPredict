@@ -1,7 +1,11 @@
 {
+  "name": "medipredict-backend",
+  "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "postinstall": "prisma skills sync || exit 0"
   },
   "dependencies": {
     "cors": "^2.8.6",

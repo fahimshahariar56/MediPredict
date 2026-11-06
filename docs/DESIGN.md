@@ -1,320 +1,476 @@
-# MediPredict — Design System & UI/UX Guidelines
+# MediPredict — UI/UX Design System
 
-## 1. Design Overview
+## 1. Design Direction
 
-MediPredict is an Explainable AI-powered healthcare risk prediction platform designed to help users understand potential diabetes and heart disease risks.
+MediPredict should have a clean, premium healthcare SaaS visual
+language.
 
 The interface should communicate:
-- Trust and credibility
-- Simplicity and clarity
-- Professional healthcare experience
-- Data-driven insights
-- Accessibility and usability
 
-**Design Direction:** Clean, premium healthcare SaaS dashboard.
-
-## 2. Design Principles
-
-1. **Clarity First:** Present complex health information in simple language.
-2. **Trustworthy:** Use a professional healthcare visual identity.
-3. **Minimalism:** Avoid unnecessary visual elements.
-4. **Consistency:** Maintain consistent components across all pages.
-5. **Accessibility:** Ensure readable text, sufficient contrast, and keyboard accessibility.
-6. **Responsive:** Support mobile, tablet, laptop, and desktop.
-
-## 3. Color Palette
-
-### Primary Colors
-
-| Token | Color | Usage |
-|---|---|---|
-| Primary | `#2563EB` | Primary actions and links |
-| Primary Dark | `#1D4ED8` | Hover and active states |
-| Primary Light | `#DBEAFE` | Soft highlights |
-| Background | `#F8FAFC` | Main application background |
-| Surface | `#FFFFFF` | Cards and panels |
-| Text Primary | `#0F172A` | Headings and primary text |
-| Text Secondary | `#64748B` | Supporting text |
-| Border | `#E2E8F0` | Dividers and card borders |
-
-### Risk Status Colors
-
-| Status | Color | Usage |
-|---|---|---|
-| Low | `#16A34A` | Low estimated risk |
-| Moderate | `#D97706` | Moderate estimated risk |
-| High | `#DC2626` | High estimated risk |
-| Neutral | `#64748B` | Unknown or unavailable |
-
-Risk colors must always be accompanied by text labels. Never communicate medical risk through color alone.
-
-## 4. Typography
-
-**Primary Font:** Inter
-
-| Element | Recommended Size | Weight |
-|---|---:|---|
-| Page Heading | 28–36px | 700 |
-| Section Heading | 20–24px | 600 |
-| Card Heading | 16–18px | 600 |
-| Body Text | 14–16px | 400 |
-| Supporting Text | 12–14px | 400 |
-| Button Text | 14–16px | 600 |
-
-Use consistent line heights and avoid excessively small text.
-
-## 5. Layout & Spacing
-
-- Use a centered, responsive content container.
-- Maintain consistent horizontal and vertical spacing.
-- Use a 4px-based spacing scale.
-- Prefer spacious layouts over crowded dashboards.
-- Use CSS Grid and Flexbox for responsive layouts.
-
-### Border Radius
-
-| Component | Radius |
-|---|---|
-| Small Elements | 8px |
-| Input Fields | 10px |
-| Cards | 16px |
-| Modals | 20px |
-| Buttons | 10–12px |
-
-### Shadows
-
-Use subtle shadows rather than heavy elevation.
-
-- Cards: soft, low-opacity shadow.
-- Dropdowns: slightly stronger shadow.
-- Modals: clear elevation from the background.
-
-## 6. Core UI Components
-
-### Buttons
-- Primary: solid primary blue.
-- Secondary: light background with border.
-- Destructive: red for dangerous actions.
-- Disabled: muted appearance.
-- Include hover, focus, active, and disabled states.
-
-### Cards
-- White background.
-- Subtle border.
-- Rounded corners.
-- Consistent padding.
-- Clear title and content hierarchy.
-
-### Forms
-- Always show labels.
-- Provide appropriate placeholders.
-- Validate user input.
-- Display helpful error messages.
-- Explain units and accepted ranges where relevant.
-- Never rely only on placeholder text.
-
-### Navigation
-- Consistent sidebar or top navigation.
-- Highlight the active page.
-- Keep navigation labels understandable.
-- Provide mobile-friendly navigation.
-
-## 7. Dashboard Design
-
-The user dashboard should include:
-
-1. Welcome section
-2. Health overview
-3. Diabetes risk prediction shortcut
-4. Heart disease risk prediction shortcut
-5. Recent prediction history
-6. Risk summary
-7. Educational health information
-
-### Dashboard Cards
-
-Each card should have:
-- Clear title
-- Relevant icon
-- Main value or summary
-- Supporting description
-- Appropriate action
-
-Do not display fabricated health statistics or prediction history.
-
-## 8. Prediction Result Design
-
-Prediction results should be understandable and transparent.
-
-Include:
-
-- Prediction type
-- Estimated risk category
-- Probability or score, only when supported by a validated model
-- Important contributing features
-- SHAP-based explanation
-- Model information
-- Prediction date
-- Medical disclaimer
-
-### Explainability
-
-Use:
-- Horizontal feature contribution charts
-- Positive and negative contribution indicators
-- Simple descriptions of important features
-- Clear distinction between correlation, model contribution, and causation
-
-Never imply that SHAP feature contributions prove medical causation.
-
-## 9. Charts & Data Visualization
-
-Use charts only when they improve understanding.
-
-Recommended:
-- Bar charts for feature contributions
-- Line charts for historical trends
-- Donut charts for appropriate summary metrics
-- Horizontal bars for risk comparisons
-
-Chart requirements:
-- Clear labels
-- Readable legends
-- Consistent typography
-- Accessible colors
-- Responsive sizing
-- Tooltips where useful
-
-Do not show historical trends when sufficient historical data does not exist.
-
-## 10. Responsive Design
-
-### Desktop
-- Full dashboard layout
-- Sidebar navigation
-- Multi-column cards
-
-### Tablet
-- Collapsible sidebar
-- Two-column layouts where appropriate
-
-### Mobile
-- Single-column layouts
-- Mobile navigation
-- Full-width forms and cards
-- Touch-friendly controls
-- Avoid horizontal scrolling
-
-## 11. Accessibility
-
-Follow WCAG 2.2 AA principles where practical.
-
-- Maintain sufficient color contrast.
-- Use semantic HTML.
-- Add accessible labels to form controls.
-- Support keyboard navigation.
-- Provide visible focus indicators.
-- Use descriptive error messages.
-- Provide text alternatives for meaningful icons and charts.
-
-## 12. Motion & Interaction
-
-Animations should be subtle and purposeful.
-
-Recommended:
-- Smooth hover transitions
-- Small card entrance animations
-- Loading skeletons
-- Progress indicators
-- Modal transitions
-
-Avoid excessive animation, distracting effects, and unnecessary page transitions.
-
-## 13. Loading, Empty & Error States
-
-Every data-driven page should handle:
-
-- Loading state
-- Empty state
-- Error state
-- Success state
-- Unauthorized state
-
-Use skeleton loaders where appropriate. Never display fake data to hide missing API responses.
-
-## 14. Dark Mode
-
-Dark mode may be introduced as a future enhancement.
-
-If implemented:
-- Use dark neutral backgrounds.
-- Maintain readable text contrast.
-- Preserve semantic risk colors.
-- Ensure charts remain accessible.
-- Keep component appearance consistent.
-
-## 15. Frontend Implementation Guidelines
-
-Frontend stack:
-- Next.js App Router
-- TypeScript
-- Tailwind CSS
-- Reusable React components
-
-Recommended component structure:
-
-```text
-frontend/
-└── src/
-    ├── app/
-    ├── components/
-    │   ├── ui/
-    │   ├── layout/
-    │   ├── dashboard/
-    │   ├── forms/
-    │   └── charts/
-    ├── features/
-    │   ├── auth/
-    │   ├── diabetes/
-    │   ├── heart-disease/
-    │   └── dashboard/
-    ├── hooks/
-    ├── lib/
-    ├── types/
-    └── styles/
+- Trust
+- Clarity
+- Modern healthcare technology
+- Calmness
+- Data intelligence
+- Professionalism
+
+------------------------------------------------------------------------
+
+## 2. Visual Style
+
+Primary visual characteristics:
+
+- Very light blue/white backgrounds
+- Soft rounded cards
+- Pill-style navigation
+- Subtle shadows
+- Dark/black active states
+- Pale blue accents
+- Minimal line icons
+- Spacious layouts
+- Thin charts
+- Clean typography
+- Responsive design
+
+Avoid:
+
+- Excessive gradients
+- Overly decorative medical imagery
+- Dense dashboards
+- Aggressive colors
+- Unnecessary animation
+- Fake medical claims
+
+------------------------------------------------------------------------
+
+## 3. Layout
+
+The system should use consistent layout primitives:
+
+``` text
+Page
+ |
+ +-- Header / Navigation
+ |
+ +-- Main Content
+ |      |
+ |      +-- Section
+ |      +-- Cards
+ |      +-- Charts
+ |      +-- Forms
+ |
+ +-- Footer where appropriate
 ```
 
-### Coding Rules
+------------------------------------------------------------------------
 
-- Use reusable components.
-- Use TypeScript types for component props.
-- Avoid duplicated styling.
-- Keep business logic outside presentation components.
-- Use consistent naming conventions.
-- Maintain responsive behavior.
-- Avoid unnecessary dependencies.
-- Follow the project's established architecture.
+## 4. Public Pages
 
-## 16. Design Consistency Rules
+Potential public pages:
 
-1. All pages must follow the same visual language.
-2. Use the same spacing, typography, and color tokens.
-3. Do not introduce random colors.
-4. Keep cards, buttons, and forms visually consistent.
-5. Maintain consistent navigation across authenticated pages.
-6. Use realistic, meaningful content.
-7. Never sacrifice usability for decoration.
+- Home
+- About
+- How It Works
+- Features
+- Technology
+- Contact
+- Login
+- Register
 
-## 17. Medical Safety & Trust
+The homepage should clearly communicate that MediPredict provides risk
+estimates and is not a diagnosis system.
 
-MediPredict is a risk-estimation and educational platform, not a diagnostic system.
+------------------------------------------------------------------------
 
-- Do not describe predictions as confirmed diagnoses.
-- Do not recommend medication or treatment based solely on model output.
-- Clearly communicate uncertainty and limitations.
-- Encourage users to consult qualified healthcare professionals.
-- Do not use alarming language to describe risk results.
+## 5. User Dashboard
 
----
+Dashboard should prioritize:
 
-**Design Goal:** Build a clean, trustworthy, premium healthcare SaaS experience where users can easily understand their health-risk estimates and the factors influencing the model's predictions.
+1.  Current overview
+2.  Recent predictions
+3.  Risk distribution
+4.  Disease-specific insights
+5.  Prediction history
+6.  Quick prediction actions
+
+Example layout:
+
+``` text
+Welcome
+   |
+   +-- Total Predictions
+   +-- Diabetes Risk
+   +-- Heart Disease Risk
+   +-- Recent Activity
+   |
+   +-- Risk Trend Chart
+   +-- Recent Predictions
+```
+
+------------------------------------------------------------------------
+
+## 6. Prediction UI
+
+Prediction forms should be:
+
+- Clearly grouped
+- Easy to scan
+- Properly labeled
+- Keyboard accessible
+- Mobile friendly
+- Validated
+- Explicit about units
+
+Do not use unexplained medical abbreviations.
+
+------------------------------------------------------------------------
+
+## 7. Prediction Result
+
+Result page should emphasize:
+
+``` text
+Disease
+   |
+Risk Probability
+   |
+Risk Level
+   |
+Important Factors
+   |
+Explanation
+   |
+Model Information
+   |
+Disclaimer
+```
+
+Use visual hierarchy rather than excessive decoration.
+
+------------------------------------------------------------------------
+
+## 8. Explainable AI UI
+
+SHAP output should be presented in an understandable way.
+
+Possible components:
+
+- Feature contribution chart
+- Positive/negative contribution indicators
+- Ranked important features
+- Explanation summary
+
+Example:
+
+``` text
+Prediction: High Risk
+
+Most influential factors
+
+Glucose        █████████
+BMI            ██████
+Blood Pressure ████
+```
+
+The UI must clearly communicate that these are model-derived
+explanations, not clinical conclusions.
+
+------------------------------------------------------------------------
+
+## 9. Charts
+
+Charts should be:
+
+- Thin
+- Clean
+- Responsive
+- Minimal
+- Properly labeled
+- Accessible
+
+Possible charts:
+
+- Risk trend
+- Prediction distribution
+- Disease comparison
+- Feature contribution
+- Model performance
+
+Avoid chart overload.
+
+------------------------------------------------------------------------
+
+## 10. Color System
+
+Use a restrained healthcare palette.
+
+Conceptually:
+
+``` text
+Background     → Very Light Blue / White
+Surface        → White
+Primary Text   → Dark / Black
+Secondary Text → Muted Gray
+Accent         → Pale Blue
+Success        → Restrained Green
+Warning        → Restrained Amber
+Danger         → Restrained Red
+```
+
+Colors should communicate meaning and not be used as decoration alone.
+
+------------------------------------------------------------------------
+
+## 11. Typography
+
+Typography should prioritize readability.
+
+Use:
+
+- Strong heading hierarchy
+- Comfortable body size
+- Adequate line height
+- Clear labels
+- Consistent font weights
+
+------------------------------------------------------------------------
+
+## 12. Cards
+
+Cards should use:
+
+- Rounded corners
+- Subtle borders/shadows
+- Consistent padding
+- Clear hierarchy
+- Limited information density
+
+------------------------------------------------------------------------
+
+## 13. Forms
+
+Form requirements:
+
+- Visible labels
+- Helpful placeholders only where useful
+- Clear validation
+- Error messages near fields
+- Accessible focus states
+- Submit/loading states
+- Disabled states where appropriate
+
+------------------------------------------------------------------------
+
+## 14. Responsive Design
+
+The application must support:
+
+- Desktop
+- Laptop
+- Tablet
+- Mobile
+
+Dashboard cards should collapse naturally.
+
+Tables should support horizontal scrolling or responsive alternatives.
+
+Charts must remain readable on small screens.
+
+------------------------------------------------------------------------
+
+## 15. Accessibility
+
+Required:
+
+- Semantic HTML
+- Keyboard navigation
+- Visible focus
+- Accessible labels
+- Appropriate ARIA attributes
+- Sufficient contrast
+- Reduced-motion support
+
+Respect:
+
+``` css
+@media (prefers-reduced-motion: reduce)
+```
+
+------------------------------------------------------------------------
+
+## 16. Motion
+
+Motion should be subtle.
+
+Use animation for:
+
+- Page transitions
+- Card appearance
+- Chart loading
+- Button feedback
+- Navigation transitions
+
+Avoid:
+
+- Excessive bouncing
+- Constant movement
+- Distracting parallax
+- Long loading animations
+
+------------------------------------------------------------------------
+
+## 17. Loading States
+
+Every async screen should have an intentional loading state.
+
+Examples:
+
+- Skeleton cards
+- Skeleton charts
+- Button spinner
+- Prediction processing state
+
+Never leave the user with an unexplained blank page.
+
+------------------------------------------------------------------------
+
+## 18. Error States
+
+Errors should be:
+
+- Human-readable
+- Actionable
+- Non-technical where possible
+- Consistent
+
+Do not expose:
+
+- Stack traces
+- Database errors
+- Internal service secrets
+- Raw server exceptions
+
+------------------------------------------------------------------------
+
+## 19. Empty States
+
+Examples:
+
+``` text
+No predictions yet.
+
+Run your first health risk prediction to see
+your results and history here.
+```
+
+Empty states should guide the user toward the next action.
+
+------------------------------------------------------------------------
+
+## 20. Trust & Medical Safety
+
+The interface must clearly communicate:
+
+- Risk estimate, not diagnosis
+- Experimental/research nature
+- Professional medical consultation for health decisions
+- Model limitations where appropriate
+
+Do not present a prediction as a confirmed disease state.
+
+------------------------------------------------------------------------
+
+## 21. Admin UI
+
+Admin dashboard should follow the same design language.
+
+Potential sections:
+
+- Overview
+- Users
+- Predictions
+- Models
+- Model performance
+- Audit activity
+
+Admin-only controls must be visually distinct without creating a
+completely different design system.
+
+------------------------------------------------------------------------
+
+## 22. Component Organization
+
+Frontend components should be reusable.
+
+``` text
+components/
+├── ui/
+├── layout/
+├── dashboard/
+├── prediction/
+├── charts/
+└── common/
+```
+
+Feature-specific logic belongs in:
+
+``` text
+features/
+├── auth/
+├── diabetes/
+├── heart-disease/
+├── dashboard/
+└── profile/
+```
+
+------------------------------------------------------------------------
+
+## 23. Design Consistency Rule
+
+Public, user, doctor, and admin interfaces should share:
+
+- Typography
+- Spacing
+- Cards
+- Buttons
+- Form controls
+- Icons
+- Color language
+- Responsive behavior
+
+Only information architecture and permissions should differ
+significantly.
+
+------------------------------------------------------------------------
+
+## 24. Frontend Technology
+
+Current frontend direction:
+
+- Next.js App Router
+- React
+- JavaScript / JSX
+- Tailwind CSS
+
+Important:
+
+``` text
+layout.js  → root app layout
+page.js    → root page
+*.jsx      → route/component pages where appropriate
+*.js       → utilities, services, configuration, hooks where appropriate
+```
+
+------------------------------------------------------------------------
+
+## 25. Design Success Criteria
+
+The design is successful when:
+
+- The application looks like a premium healthcare SaaS product.
+- Users can understand prediction results quickly.
+- Forms are easy to complete.
+- Dashboards are not visually overloaded.
+- SHAP explanations are understandable.
+- The design remains consistent across all roles.
+- The interface is responsive and accessible.

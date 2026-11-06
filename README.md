@@ -133,27 +133,26 @@ The following diagram illustrates the overall architecture and communication flo
 
 ```mermaid
 flowchart TB
-
     U([User])
 
     subgraph CLIENT["Presentation Layer"]
-        FE["Next.js Application<br/>App Router"]
+        FE["Next.js Application - App Router"]
     end
 
     subgraph APP["Application Layer"]
-        API["Node.js + Express.js<br/>Main REST API"]
-        AUTH["Better Auth<br/>Authentication"]
+        API["Node.js + Express.js - Main REST API"]
+        AUTH["Better Auth - Authentication"]
         ODM["Mongoose ODM"]
     end
 
     subgraph DATA["Data Layer"]
-        DB[("MongoDB<br/>Database")]
+        DB[("MongoDB - Database")]
     end
 
     subgraph ML["Machine Learning Layer"]
         FAST["Python + FastAPI"]
         MODEL["Scikit-learn / XGBoost"]
-        SHAP["SHAP<br/>Explainability"]
+        SHAP["SHAP - Explainability"]
     end
 
     U --> FE

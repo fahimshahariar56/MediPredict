@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { BorderBeam } from "@/components/animation/BorderBeam";
 import { FadeIn } from "@/components/animation/FadeIn";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export function AuthLayout({
   children,
@@ -22,6 +23,7 @@ export function AuthLayout({
   subheading,
   illustration = "/assets/Doctors-rafiki.png",
   illustrationAlt = "Medical clinicians collaborating with AI diagnostics",
+  variant = "split", // "split" | "centered"
 }) {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col justify-between selection:bg-primary/15 selection:text-primary">
@@ -52,110 +54,148 @@ export function AuthLayout({
             </div>
           </Link>
 
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1.5 px-3 rounded-lg hover:bg-surface-subtle"
-          >
-            <ArrowLeft className="size-3.5" />
-            <span>Back to Home</span>
-          </Link>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1.5 px-3 rounded-lg hover:bg-surface-subtle"
+            >
+              <ArrowLeft className="size-3.5" />
+              <span>Back to Home</span>
+            </Link>
+          </div>
         </div>
       </header>
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex items-center justify-center">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Brand & Clinical Trust Showcase (Visible on lg+) */}
-          <div className="hidden lg:flex lg:col-span-5 flex-col justify-between space-y-8 pr-4">
-            <FadeIn>
-              <div className="space-y-4">
-                <Badge
-                  variant="outline"
-                  className="gap-1.5 px-3 py-1 text-xs font-semibold bg-surface-subtle border-primary/20 text-primary"
-                >
-                  <Sparkles className="size-3" />
-                  {badgeText}
-                </Badge>
-                <h1 className="font-heading text-3xl xl:text-4xl font-bold tracking-tight text-foreground leading-tight">
-                  Intelligent Decision Support for Modern Healthcare
-                </h1>
-                <p className="text-muted-foreground text-sm xl:text-base leading-relaxed">
-                  Combining validated Gradient Boosted Decision Tree models with transparent SHAP
-                  attribution to deliver interpretable, clinical-grade risk stratification.
-                </p>
-              </div>
-            </FadeIn>
-
-            {/* Illustration */}
-            <FadeIn delay={0.1}>
-              <div className="relative w-full max-w-sm mx-auto aspect-square flex items-center justify-center p-4">
-                <div className="absolute inset-0 rounded-full bg-primary/[0.03] blur-2xl" />
-                <Image
-                  src={illustration}
-                  alt={illustrationAlt}
-                  width={340}
-                  height={340}
-                  priority
-                  className="relative object-contain drop-shadow-sm select-none pointer-events-none"
+        {variant === "centered" ? (
+          /* ── Focused Centered Composition for Recovery & Verification ── */
+          <div className="w-full max-w-md mx-auto">
+            <FadeIn delay={0.05}>
+              <div className="relative rounded-3xl border border-border/80 bg-card/95 p-6 sm:p-9 shadow-sm backdrop-blur-md overflow-hidden">
+                <BorderBeam
+                  size={200}
+                  duration={14}
+                  borderWidth={1.5}
+                  colorFrom="var(--primary)"
+                  colorTo="oklch(0.60 0.18 240)"
                 />
-              </div>
-            </FadeIn>
 
-            {/* Clinical Value Highlights */}
-            <FadeIn delay={0.2}>
-              <div className="space-y-2.5 pt-2 border-t border-border/70 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-primary shrink-0" />
-                  <span>94.2% AUC-ROC validation benchmark on multi-cohort clinical data</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-primary shrink-0" />
-                  <span>Individualized SHAP biomarker attribution per prediction</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-primary shrink-0" />
-                  <span>Zero direct patient PHI storage — strictly de-identified inputs</span>
-                </div>
+                {(heading || subheading) && (
+                  <div className="mb-6 space-y-1.5 text-center">
+                    {heading && (
+                      <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+                        {heading}
+                      </h2>
+                    )}
+                    {subheading && (
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
+                        {subheading}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {children}
               </div>
             </FadeIn>
           </div>
+        ) : (
+          /* ── Split Clinical Showcase for Login & Registration ── */
+          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Column: Brand & Clinical Trust Showcase (Visible on lg+) */}
+            <div className="hidden lg:flex lg:col-span-5 flex-col justify-between space-y-8 pr-4">
+              <FadeIn>
+                <div className="space-y-4">
+                  <Badge
+                    variant="outline"
+                    className="gap-1.5 px-3 py-1 text-xs font-semibold bg-surface-subtle border-primary/20 text-primary"
+                  >
+                    <Sparkles className="size-3" />
+                    {badgeText}
+                  </Badge>
+                  <h1 className="font-heading text-3xl xl:text-4xl font-bold tracking-tight text-foreground leading-tight">
+                    Intelligent Decision Support for Modern Healthcare
+                  </h1>
+                  <p className="text-muted-foreground text-sm xl:text-base leading-relaxed">
+                    Combining validated Gradient Boosted Decision Tree models with transparent SHAP
+                    attribution to deliver interpretable, clinical-grade risk stratification.
+                  </p>
+                </div>
+              </FadeIn>
 
-          {/* Right Column: Form Card */}
-          <div className="w-full lg:col-span-7 flex justify-center">
-            <div className="w-full max-w-md sm:max-w-lg">
-              <FadeIn delay={0.05}>
-                <div className="relative rounded-3xl border border-border/80 bg-card/95 p-6 sm:p-9 shadow-sm backdrop-blur-md overflow-hidden">
-                  <BorderBeam
-                    size={250}
-                    duration={14}
-                    borderWidth={1.5}
-                    colorFrom="var(--primary)"
-                    colorTo="oklch(0.60 0.18 240)"
+              {/* Illustration */}
+              <FadeIn delay={0.1}>
+                <div className="relative w-full max-w-sm mx-auto aspect-square flex items-center justify-center p-4">
+                  <div className="absolute inset-0 rounded-full bg-primary/[0.03] blur-2xl" />
+                  <Image
+                    src={illustration}
+                    alt={illustrationAlt}
+                    width={340}
+                    height={340}
+                    priority
+                    className="relative object-contain drop-shadow-sm select-none pointer-events-none"
                   />
+                </div>
+              </FadeIn>
 
-                  {/* Card Title & Intro */}
-                  {(heading || subheading) && (
-                    <div className="mb-6 space-y-1.5 text-left">
-                      {heading && (
-                        <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-                          {heading}
-                        </h2>
-                      )}
-                      {subheading && (
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {subheading}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Form Component Child */}
-                  {children}
+              {/* Clinical Value Highlights */}
+              <FadeIn delay={0.2}>
+                <div className="space-y-2.5 pt-2 border-t border-border/70 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3.5 text-primary shrink-0" />
+                    <span>94.2% AUC-ROC validation benchmark on multi-cohort clinical data</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3.5 text-primary shrink-0" />
+                    <span>Individualized SHAP biomarker attribution per prediction</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3.5 text-primary shrink-0" />
+                    <span>Zero direct patient PHI storage — strictly de-identified inputs</span>
+                  </div>
                 </div>
               </FadeIn>
             </div>
+
+            {/* Right Column: Form Card */}
+            <div className="w-full lg:col-span-7 flex justify-center">
+              <div className="w-full max-w-md sm:max-w-lg">
+                <FadeIn delay={0.05}>
+                  <div className="relative rounded-3xl border border-border/80 bg-card/95 p-6 sm:p-9 shadow-sm backdrop-blur-md overflow-hidden">
+                    <BorderBeam
+                      size={250}
+                      duration={14}
+                      borderWidth={1.5}
+                      colorFrom="var(--primary)"
+                      colorTo="oklch(0.60 0.18 240)"
+                    />
+
+                    {/* Card Title & Intro */}
+                    {(heading || subheading) && (
+                      <div className="mb-6 space-y-1.5 text-left">
+                        {heading && (
+                          <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+                            {heading}
+                          </h2>
+                        )}
+                        {subheading && (
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            {subheading}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Form Component Child */}
+                    {children}
+                  </div>
+                </FadeIn>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </main>
 
       {/* Footer Bar */}
@@ -191,4 +231,3 @@ export function AuthLayout({
 }
 
 export default AuthLayout;
-

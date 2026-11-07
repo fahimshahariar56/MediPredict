@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Activity, Sparkles, ShieldCheck, HeartPulse } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { FadeIn } from "@/components/animation/FadeIn";
 import { StaggerList, StaggerItem } from "@/components/animation/StaggerList";
 import { ABOUT_PILLARS } from "../data/landing-data";
@@ -60,7 +60,7 @@ export function AboutSection() {
                 const IconComponent = iconMap[pillar.icon] || Activity;
                 return (
                   <StaggerItem key={pillar.title}>
-                    <Card className="p-5 h-full bg-background border-border/70 shadow-2xs hover:shadow-sm transition-all duration-200">
+                    <SpotlightCard className="p-5 h-full transition-all duration-200">
                       <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3">
                         <IconComponent className="size-4.5" />
                       </div>
@@ -70,7 +70,7 @@ export function AboutSection() {
                       <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                         {pillar.description}
                       </p>
-                    </Card>
+                    </SpotlightCard>
                   </StaggerItem>
                 );
               })}
@@ -83,4 +83,3 @@ export function AboutSection() {
 }
 
 export default AboutSection;
-

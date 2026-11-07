@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Activity,
   Cpu,
@@ -13,6 +12,8 @@ import {
   Database,
   BarChart3,
   FileCheck2,
+  Search,
+  Filter,
 } from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Container } from "@/components/layout/Container";
@@ -20,253 +21,247 @@ import { Section } from "@/components/layout/Section";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { InteractiveWorkflowJourney } from "@/features/how-it-works/components/InteractiveWorkflowJourney";
+import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
 import { FadeIn } from "@/components/animation/FadeIn";
-import { ScaleIn } from "@/components/animation/ScaleIn";
-import { StaggerList, StaggerItem } from "@/components/animation/StaggerList";
 
-const DETAILED_STEPS = [
-  {
-    number: "01",
-    tag: "Patient Input",
-    title: "Non-Invasive Biomarker Entry",
-    description:
-      "Users input standard clinical indicators and routine laboratory values: resting blood pressure, fasting plasma glucose, total cholesterol, BMI, and physical activity profiles. Client-side validators verify unit conformity and clinical physiological bounds.",
-    points: [
-      "Standard medical metrics (mg/dL, mmHg, kg/m²)",
-      "Strict zero-knowledge input vectorization",
-      "No invasive equipment or wearable sensor mandates",
-    ],
-    icon: Database,
-  },
-  {
-    number: "02",
-    tag: "Ensemble Computation",
-    title: "Gradient-Boosted Tree Inference",
-    description:
-      "Input vectors are fed into calibrated XGBoost and LightGBM models. Thousands of decision branches calculate conditional risk probabilities, capturing complex multi-factor interactions that simple clinical threshold scorecards frequently overlook.",
-    points: [
-      "Trained on validated multi-center clinical cohorts",
-      "Isotonic regression calibration for authentic probabilities",
-      "Execution latency consistently under 50 milliseconds",
-    ],
-    icon: Cpu,
-  },
-  {
-    number: "03",
-    tag: "Explainable AI",
-    title: "SHAP Factor Attribution",
-    description:
-      "Our TreeExplainer calculates exact Shapley values according to cooperative game theory. Every input biomarker is evaluated to measure how many percentage points it contributed toward elevating or mitigating the calculated disease risk.",
-    points: [
-      "Positive (+Risk) vs Negative (-Protective) attribution",
-      "Mathematical proof of local explanation fidelity",
-      "Direct visualization of the patient's primary drivers",
-    ],
-    icon: Sparkles,
-  },
-  {
-    number: "04",
-    tag: "Clinical Action",
-    title: "Stratified Risk & Actionable Care Plan",
-    description:
-      "The patient receives an intuitive risk tier (Low, Moderate, or High) alongside evidence-based lifestyle modifications and clear criteria on when to schedule secondary clinical evaluations with a physician.",
-    points: [
-      "Plain-language diagnostic summary for patient clarity",
-      "Downloadable and printable physician-ready report",
-      "Evidence-backed preventative lifestyle guidance",
-    ],
-    icon: FileCheck2,
-  },
-];
-
-const BIOMARKER_GUIDE = [
+const BIOMARKERS_DATA = [
   {
     name: "Fasting Plasma Glucose",
-    unit: "mg/dL",
-    normalRange: "< 100 mg/dL",
     category: "Metabolic",
-    role: "Primary indicator of baseline glycemic control and pancreatic insulin production.",
+    unit: "mg/dL",
+    normal: "70 – 99 mg/dL",
+    elevated: "100 – 125 mg/dL (Pre-diabetic)",
+    high: "≥ 126 mg/dL (Diabetic Range)",
+    role: "Fundamental metric of baseline glycemic homeostasis and pancreatic beta-cell insulin secretion.",
   },
   {
     name: "Glycated Hemoglobin (HbA1c)",
-    unit: "%",
-    normalRange: "< 5.7%",
     category: "Metabolic",
-    role: "Reflects average blood sugar levels over the preceding 2 to 3 months.",
+    unit: "%",
+    normal: "< 5.7%",
+    elevated: "5.7% – 6.4%",
+    high: "≥ 6.5%",
+    role: "Measures 90-day average blood sugar; essential for dampening acute daily fluctuations in risk assessment.",
   },
   {
     name: "Resting Systolic Blood Pressure",
-    unit: "mmHg",
-    normalRange: "< 120 mmHg",
     category: "Cardiovascular",
-    role: "Measures arterial pressure during cardiac contraction; fundamental indicator of vascular resistance.",
+    unit: "mmHg",
+    normal: "< 120 mmHg",
+    elevated: "120 – 129 mmHg",
+    high: "≥ 130 mmHg (Hypertension Stage 1/2)",
+    role: "Reflects peak arterial pressure during cardiac ventricular contraction and vascular stiffness.",
   },
   {
-    name: "Total Serum Cholesterol",
-    unit: "mg/dL",
-    normalRange: "< 200 mg/dL",
+    name: "High-Density Lipoprotein (HDL)",
     category: "Cardiovascular",
-    role: "Quantifies circulating blood lipids contributing to potential atherosclerotic plaque development.",
+    unit: "mg/dL",
+    normal: "> 50 mg/dL (Cardioprotective)",
+    elevated: "40 – 50 mg/dL",
+    high: "< 40 mg/dL (Atherogenic Risk)",
+    role: "Reverse cholesterol transport carrier; higher concentrations correlate with lower atherosclerotic plaque formation.",
+  },
+  {
+    name: "Serum Creatinine & eGFR",
+    category: "Renal",
+    unit: "mg/dL & mL/min",
+    normal: "eGFR > 90 mL/min/1.73m²",
+    elevated: "eGFR 60 – 89 mL/min",
+    high: "eGFR < 60 mL/min (Renal Impairment)",
+    role: "Indicates kidney filtration capacity and renal vascular resilience under hypertensive pressure.",
   },
   {
     name: "Body Mass Index (BMI)",
+    category: "Lifestyle",
     unit: "kg/m²",
-    normalRange: "18.5 – 24.9",
-    category: "Anthropometric",
-    role: "Standard ratio of body weight to height squared; correlated with metabolic strain.",
-  },
-  {
-    name: "Exercise ST Depression",
-    unit: "mm",
-    normalRange: "< 1.0 mm",
-    category: "Cardiovascular",
-    role: "Electrocardiographic indicator of myocardial ischemia under physical stress.",
+    normal: "18.5 – 24.9 kg/m²",
+    elevated: "25.0 – 29.9 kg/m² (Overweight)",
+    high: "≥ 30.0 kg/m² (Obese Tiers)",
+    role: "Anthropometric proxy for visceral adiposity and systemic low-grade inflammatory cytokine release.",
   },
 ];
 
 export default function HowItWorksPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const categories = ["All", "Metabolic", "Cardiovascular", "Renal", "Lifestyle"];
+
+  const filteredBiomarkers = BIOMARKERS_DATA.filter((b) => {
+    const matchesCat = selectedCategory === "All" || b.category === selectedCategory;
+    const matchesQuery =
+      b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.role.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCat && matchesQuery;
+  });
+
   return (
     <PublicLayout>
-      {/* Header Hero */}
-      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-16 sm:pb-20 border-b border-border/60 bg-surface-subtle">
+      {/* ── Journey Hero ── */}
+      <section className="relative overflow-hidden pt-20 pb-16 sm:pt-28 sm:pb-24 border-b border-border/60">
+        <InteractiveGridPattern className="opacity-40 dark:opacity-10" />
         <Container>
-          <FadeIn direction="up">
-            <div className="max-w-3xl space-y-4">
-              <Badge variant="navy">Methodology &amp; User Journey</Badge>
-              <h1 className="font-heading font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-foreground leading-[1.12]">
-                How MediPredict Computes{" "}
+          <div className="max-w-3xl space-y-5">
+            <FadeIn>
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1 text-xs font-semibold text-primary">
+                <Activity className="size-3.5" />
+                <span>End-to-End Diagnostic Pipeline</span>
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={0.1}>
+              <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-foreground leading-[1.12]">
+                From Biometric Vitals to{" "}
                 <span className="bg-gradient-to-r from-primary via-blue-600 to-sky-500 bg-clip-text text-transparent">
-                  Clinical Risk Scores
+                  Explainable Risk Scores.
                 </span>
               </h1>
+            </FadeIn>
+
+            <FadeIn delay={0.15}>
               <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-                A transparent, step-by-step walkthrough of how everyday biometric vitals
-                move through our machine learning pipeline into actionable preventive insights.
+                Explore the step-by-step pipeline through which MediPredict cleans, computes,
+                explains, and stratifies patient health risks without compromising patient privacy.
               </p>
-            </div>
-          </FadeIn>
+            </FadeIn>
+          </div>
         </Container>
       </section>
 
-      {/* 4 Detailed Pipeline Steps */}
-      <Section spacing="default" className="bg-background">
-        <Container className="space-y-16">
-          <FadeIn direction="up">
-            <div className="text-center max-w-2xl mx-auto space-y-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-primary">
-                The 4-Stage Diagnostic Pipeline
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight text-foreground">
-                Rigorous, Explainable, &amp; Medically Grounded
-              </h2>
-            </div>
-          </FadeIn>
-
-          <div className="space-y-8">
-            {DETAILED_STEPS.map((step, idx) => {
-              const Icon = step.icon;
-              return (
-                <FadeIn key={step.number} direction="up" delay={idx * 0.08}>
-                  <Card className="p-6 sm:p-8 border-border/80 bg-surface-subtle/50 hover:bg-surface-subtle transition-all duration-200">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                      <div className="lg:col-span-1 flex lg:flex-col items-center gap-3">
-                        <span className="font-heading font-extrabold text-3xl text-primary/40">
-                          {step.number}
-                        </span>
-                        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                          <Icon className="size-5" />
-                        </div>
-                      </div>
-
-                      <div className="lg:col-span-7 space-y-3">
-                        <Badge variant="outline" className="text-xs font-mono">
-                          {step.tag}
-                        </Badge>
-                        <h3 className="font-heading font-bold text-2xl text-foreground">
-                          {step.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {step.description}
-                        </p>
-                      </div>
-
-                      <div className="lg:col-span-4 rounded-2xl border border-border/80 bg-background p-4 space-y-2">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                          Key Technical Safeguards:
-                        </span>
-                        <ul className="space-y-1.5 text-xs text-muted-foreground">
-                          {step.points.map((pt) => (
-                            <li key={pt} className="flex items-start gap-1.5">
-                              <CheckCircle2 className="size-3.5 text-success shrink-0 mt-0.5" />
-                              <span>{pt}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </Card>
-                </FadeIn>
-              );
-            })}
+      {/* ── Interactive Process Journey ── */}
+      <Section className="py-20 sm:py-28 bg-surface-subtle border-b border-border/70">
+        <Container>
+          <div className="max-w-2xl mx-auto text-center space-y-3 mb-12">
+            <Badge variant="outline" className="px-3 py-1 text-xs">
+              Live Architecture Explorer
+            </Badge>
+            <h2 className="font-heading font-bold text-3xl sm:text-4xl text-foreground tracking-tight">
+              4-Stage Decision Support Pipeline
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Click any stage below to inspect the mathematical transformations and data outputs.
+            </p>
           </div>
+
+          <InteractiveWorkflowJourney />
         </Container>
       </Section>
 
-      {/* Biomarker Reference Guide */}
-      <Section spacing="default" className="bg-surface-subtle border-t border-border/70">
-        <Container className="space-y-12">
-          <FadeIn direction="up">
-            <div className="text-center max-w-2xl mx-auto space-y-3">
-              <Badge variant="navy">Biomarker Glossary</Badge>
-              <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight text-foreground">
-                Evaluated Clinical Biomarkers
+      {/* ── Filterable Biomarker Reference Library ── */}
+      <Section className="py-20 sm:py-28 bg-background">
+        <Container>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div className="space-y-2 max-w-xl">
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                Clinical Reference Guide
+              </span>
+              <h2 className="font-heading font-bold text-3xl sm:text-4xl text-foreground tracking-tight">
+                Supported Clinical Biomarkers
               </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                MediPredict focuses on standardized, non-invasive metrics commonly collected in
-                routine health checkups and blood panels.
+              <p className="text-muted-foreground text-sm">
+                MediPredict standardizes non-invasive lab metrics against international medical guidelines.
               </p>
             </div>
-          </FadeIn>
 
+            {/* Search Input & Category Filters */}
+            <div className="space-y-3 w-full md:w-auto">
+              <div className="relative">
+                <Search className="size-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Filter biomarkers (e.g. Glucose)..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-10 w-full md:w-72 rounded-xl border border-input bg-card pl-10 pr-4 text-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-1.5">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={[
+                      "text-xs px-3 py-1 rounded-lg font-medium transition-all",
+                      selectedCategory === cat
+                        ? "bg-primary text-primary-foreground font-semibold"
+                        : "border border-border/80 bg-surface-subtle hover:bg-card text-muted-foreground",
+                    ].join(" ")}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Biomarkers Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {BIOMARKER_GUIDE.map((bio) => (
-              <Card key={bio.name} className="p-5 bg-background border-border/80 shadow-2xs flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant={bio.category === "Cardiovascular" ? "default" : "secondary"}>
-                      {bio.category}
+            {filteredBiomarkers.map((b) => (
+              <Card
+                key={b.name}
+                className="p-6 rounded-2xl border-border/80 bg-card hover:border-primary/40 transition-all flex flex-col justify-between space-y-4"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="text-[10px] font-mono uppercase">
+                      {b.category}
                     </Badge>
-                    <span className="text-xs font-mono text-muted-foreground">
-                      Unit: {bio.unit}
+                    <span className="text-xs font-mono text-muted-foreground">{b.unit}</span>
+                  </div>
+                  <h3 className="font-heading font-bold text-lg text-foreground">{b.name}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{b.role}</p>
+                </div>
+
+                <div className="space-y-1.5 pt-3 border-t border-border/60 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Normal:</span>
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                      {b.normal}
                     </span>
                   </div>
-                  <h3 className="font-heading font-semibold text-base text-foreground mt-1">
-                    {bio.name}
-                  </h3>
-                  <div className="text-xs text-primary font-medium mt-1">
-                    Target: {bio.normalRange}
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Elevated:</span>
+                    <span className="font-medium text-amber-600 dark:text-amber-400">
+                      {b.elevated}
+                    </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                    {bio.role}
-                  </p>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">High Risk:</span>
+                    <span className="font-semibold text-rose-600 dark:text-rose-400">
+                      {b.high}
+                    </span>
+                  </div>
                 </div>
               </Card>
             ))}
           </div>
-
-          {/* Bottom CTA */}
-          <div className="text-center pt-8">
-            <Link href="/#preview">
-              <ShimmerButton className="shadow-md">
-                <span>Try Live Model Demonstration</span>
-                <ArrowRight className="size-4" />
-              </ShimmerButton>
-            </Link>
-          </div>
         </Container>
       </Section>
+
+      {/* ── CTA ── */}
+      <section className="py-20 sm:py-24 bg-surface-subtle border-t border-border/70">
+        <Container>
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <h2 className="font-heading font-bold text-3xl sm:text-4xl text-foreground tracking-tight">
+              Ready to Inspect the Explainable AI Methodology?
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              Learn how game-theoretic Shapley values calculate mathematical attributions for each
+              prediction without black-box opacity.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Button asChild size="lg" variant="default" className="gap-2">
+                <Link href="/ai-technology">
+                  <span>Explore AI Technology</span>
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </Container>
+      </section>
     </PublicLayout>
   );
 }
-

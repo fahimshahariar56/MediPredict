@@ -4,7 +4,7 @@ import React from "react";
 import { Star, Quote } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { FadeIn } from "@/components/animation/FadeIn";
 import { StaggerList, StaggerItem } from "@/components/animation/StaggerList";
 import { TESTIMONIALS } from "../data/landing-data";
@@ -29,7 +29,7 @@ export function TestimonialsSection() {
         <StaggerList className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((t) => (
             <StaggerItem key={t.id}>
-              <Card className="p-6 h-full bg-card border-border/80 shadow-2xs flex flex-col justify-between">
+              <SpotlightCard className="p-6 h-full flex flex-col justify-between">
                 <div>
                   {/* Star Rating & Quote Tag */}
                   <div className="flex items-center justify-between mb-4">
@@ -60,7 +60,7 @@ export function TestimonialsSection() {
                     <div className="text-xs text-muted-foreground">{t.role}</div>
                   </div>
                 </div>
-              </Card>
+              </SpotlightCard>
             </StaggerItem>
           ))}
         </StaggerList>
@@ -70,4 +70,3 @@ export function TestimonialsSection() {
 }
 
 export default TestimonialsSection;
-

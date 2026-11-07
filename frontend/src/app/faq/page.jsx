@@ -1,11 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
+import {
+  HelpCircle,
+  Search,
+  ChevronDown,
+  Sparkles,
+  ArrowRight,
+  MessageSquare,
+  ShieldCheck,
+  Cpu,
+  Activity,
+  FileQuestion,
+} from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
-import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
-import { FadeIn } from "@/components/animation/FadeIn";
-import { StaggerList, StaggerItem } from "@/components/animation/StaggerList";
+import { Section } from "@/components/layout/Section";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,252 +26,275 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { HelpCircleIcon } from "lucide-react";
-import Link from "next/link";
+import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
+import { FadeIn } from "@/components/animation/FadeIn";
 
-const categories = [
+const FAQ_DATABASE = [
   {
-    id: "general",
-    label: "General",
-    color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+    category: "General",
+    icon: FileQuestion,
     questions: [
       {
-        q: "What is MediPredict?",
-        a: "MediPredict is an AI-powered clinical decision-support platform that helps healthcare professionals assess patient risk for selected medical conditions — including cardiovascular disease, diabetes, and CKD — using de-identified biomarker data.",
+        q: "What is MediPredict and what is its primary medical objective?",
+        a: "MediPredict is an AI-powered clinical decision support platform designed to assist healthcare practitioners in predicting patient risk for chronic cardiometabolic diseases—specifically type 2 diabetes and atherosclerotic cardiovascular disease (ASCVD). Its goal is proactive risk stratification before irreversible vascular or pancreatic damage manifests.",
       },
       {
-        q: "Who is MediPredict designed for?",
-        a: "MediPredict is designed for qualified healthcare professionals: clinicians, general practitioners, cardiologists, endocrinologists, nephrologists, and clinical researchers. It is not a consumer health app.",
+        q: "Is MediPredict intended to replace licensed physicians or clinicians?",
+        a: "No. MediPredict is strictly an interpretive decision-support tool. All risk stratifications, biomarker attributions, and lifestyle recommendations must be reviewed and contextualized by a qualified clinician within the patient's full medical history. It does not issue autonomous diagnoses or prescriptions.",
       },
       {
-        q: "Is MediPredict currently available to use?",
-        a: "MediPredict is in active development. A waitlist is open for early access. Full platform availability, including pricing, will be announced when the platform is ready for clinical deployment.",
-      },
-      {
-        q: "What conditions does MediPredict support?",
-        a: "The current development roadmap includes risk prediction for cardiovascular disease, type 2 diabetes, chronic kidney disease (CKD), hypertension risk stratification, and metabolic syndrome indicators. The list of supported conditions will expand over time.",
-      },
-      {
-        q: "Is MediPredict a replacement for a doctor?",
-        a: "Absolutely not. MediPredict is a decision-support tool. All predictions must be reviewed and interpreted by a qualified clinician in the context of the patient's full clinical picture. It does not provide diagnoses or prescriptions.",
+        q: "Can patients directly use MediPredict to self-diagnose?",
+        a: "While patients can input their standard laboratory vitals to better understand their risk profile, the resulting reports are structured specifically for collaborative review alongside their treating physician. Emergency symptoms require immediate institutional care.",
       },
     ],
   },
   {
-    id: "medical-clinical",
-    label: "Medical & Clinical",
-    color: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+    category: "Machine Learning & AI",
+    icon: Cpu,
     questions: [
       {
-        q: "How accurate are MediPredict's predictions?",
-        a: "MediPredict's models are built on peer-reviewed clinical datasets and use Gradient Boosted Decision Tree (GBDT) algorithms validated against standard benchmarks. Exact accuracy metrics (AUC-ROC, sensitivity, specificity) for each model will be published in the platform documentation before clinical deployment.",
+        q: "Why does MediPredict use Gradient Boosted Decision Trees rather than Deep Neural Networks?",
+        a: "Clinical research and empirical benchmarks demonstrate that GBDTs (specifically calibrated XGBoost and LightGBM ensembles) consistently outperform deep learning on structured, heterogeneous tabular biomarker data. GBDTs naturally handle missing values, prevent overparameterization on clinical cohorts, enforce strict monotonic relationships, and integrate directly with exact TreeSHAP attribution.",
       },
       {
-        q: "What biomarkers are required for a prediction?",
-        a: "Required biomarkers vary by condition. For cardiovascular risk, typical inputs include age, blood pressure, cholesterol (total, LDL, HDL), fasting glucose, BMI, and smoking status. The platform will clearly indicate required versus optional fields for each prediction model.",
+        q: "What is SHAP and why is it essential in healthcare AI?",
+        a: "SHAP (SHapley Additive exPlanations) is a game-theoretic approach that assigns each input biomarker an exact credit value for pushing the risk prediction higher (+risk) or mitigating it (-protective). This provides mathematical proof for why the model reached a specific score, eliminating black-box clinical skepticism.",
       },
       {
-        q: "Can I use MediPredict in an emergency?",
-        a: "No. MediPredict is not designed for emergency situations. In any medical emergency, follow your institution's emergency protocols and contact emergency services immediately.",
-      },
-      {
-        q: "Does MediPredict provide treatment recommendations?",
-        a: "No. MediPredict provides risk stratification and explainability — it shows which biomarkers most influenced the prediction. Treatment decisions remain entirely with the treating clinician.",
-      },
-      {
-        q: "What does the SHAP explanation feature show?",
-        a: "SHAP (SHapley Additive exPlanations) is a technique from explainable AI (XAI) that shows how much each input biomarker contributed to a specific prediction — positively or negatively. This helps clinicians understand why the model reached a particular risk score.",
+        q: "How are the machine learning models validated?",
+        a: "Our ensemble models are trained and cross-validated on large multi-center clinical cohorts (including NHANES, UK Biobank, and Framingham datasets) comprising over 180,000 patient records. Models undergo strict isotonic regression calibration to ensure output probabilities correspond directly to observed empirical disease rates.",
       },
     ],
   },
   {
-    id: "ai-technology",
-    label: "AI & Technology",
-    color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+    category: "Privacy & HIPAA",
+    icon: ShieldCheck,
     questions: [
       {
-        q: "What AI technology powers MediPredict?",
-        a: "MediPredict uses Gradient Boosted Decision Tree (GBDT) models — specifically variants inspired by XGBoost and LightGBM architectures — trained on curated clinical datasets. SHAP is integrated for model explainability.",
+        q: "Does MediPredict store identifiable Patient Health Information (PHI)?",
+        a: "No. MediPredict enforces a strict zero-PHI architectural principle. The predictive microservice operates entirely on de-identified numerical biometric vectors (e.g., blood pressure, glucose, age brackets). No patient names, Social Security numbers, or contact details are transmitted to or stored by the ML engine.",
       },
       {
-        q: "Why GBDT instead of deep learning / neural networks?",
-        a: "GBDT models offer superior performance on structured tabular clinical data, require less training data than deep learning approaches, and produce inherently more interpretable results. They also have lower computational requirements, making real-time predictions more practical.",
+        q: "How is data protected during transmission?",
+        a: "All network traffic is encrypted using TLS 1.3 forward-secrecy ciphers. At rest, database sessions and cached reports use AES-256 encryption. Our architecture is designed in full alignment with HIPAA Security Rule specifications.",
       },
       {
-        q: "How is the AI model trained?",
-        a: "Models are trained on de-identified clinical datasets sourced from publicly available research repositories. Training pipelines include cross-validation, hyperparameter optimisation, and bias auditing. Detailed model cards will be published before clinical deployment.",
-      },
-      {
-        q: "How often are models updated?",
-        a: "Model update cadence will be published in the platform documentation. All updates will undergo validation testing before deployment to maintain prediction quality and safety.",
-      },
-      {
-        q: "Does MediPredict learn from my patient data?",
-        a: "No. MediPredict does not use individual patient submissions to retrain or update its models without explicit research consent. Your clinical data is used solely to generate predictions for your patients.",
+        q: "Can health systems sign a Business Associate Agreement (BAA)?",
+        a: "Yes. Enterprise and Health System tier deployments include formal BAA contracts, dedicated data residency isolation, and compliance audit reporting.",
       },
     ],
   },
   {
-    id: "privacy-security",
-    label: "Privacy & Security",
-    color: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+    category: "Clinical Integration",
+    icon: Activity,
     questions: [
       {
-        q: "Is MediPredict HIPAA-compliant?",
-        a: "MediPredict is designed with HIPAA considerations in mind. The platform operates on de-identified data, implements encryption in transit and at rest, provides audit logging, and supports Business Associate Agreements (BAAs) for enterprise customers. Formal compliance status should be confirmed with our team before clinical deployment.",
+        q: "What non-invasive biomarkers are required to generate an assessment?",
+        a: "Core inputs include resting blood pressure (systolic/diastolic), fasting plasma glucose, HbA1c, lipid profile (total cholesterol, HDL, LDL), BMI, age, and smoking status. Optional secondary metrics (e.g., resting heart rate, physical activity) further refine risk confidence intervals.",
       },
       {
-        q: "What data does MediPredict store?",
-        a: "MediPredict stores account credentials, usage analytics (anonymised), and any biomarker data you submit for predictions. Patient data is processed in de-identified form. Full details are available in our Privacy Policy.",
+        q: "Does MediPredict support EHR/EMR integrations like Epic or Cerner?",
+        a: "EHR integration via HL7 FHIR APIs is available on the Health System tier. This allows clinicians to auto-populate patient biometric vectors directly from the electronic health record with a single click.",
       },
       {
-        q: "Who can access my data?",
-        a: "Access is strictly role-based. Within your organisation, only users you explicitly grant access to can view shared patient cohorts. MediPredict staff access to production data is logged, audited, and limited to what is necessary for support and operations.",
-      },
-      {
-        q: "Is data encrypted?",
-        a: "Yes. All data in transit is encrypted using TLS 1.3. Data at rest is encrypted using AES-256. These standards apply to all tiers of the platform.",
-      },
-      {
-        q: "Can I delete my data?",
-        a: "Yes. You have the right to request deletion of your personal data. Enterprise customers can also request deletion of associated patient cohort data. Submit a data deletion request via our Contact page.",
-      },
-    ],
-  },
-  {
-    id: "getting-started",
-    label: "Getting Started",
-    color: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
-    questions: [
-      {
-        q: "How do I get access to MediPredict?",
-        a: "MediPredict is currently in development. You can join the waitlist via our Contact page or Pricing page to be notified when early access opens.",
-      },
-      {
-        q: "What are the system requirements?",
-        a: "MediPredict is a web-based platform accessible via any modern browser (Chrome, Firefox, Safari, Edge). No software installation is required. Mobile-responsive layouts are supported for reference use, though a desktop or tablet is recommended for full clinical workflows.",
-      },
-      {
-        q: "Is training available for clinical teams?",
-        a: "Yes. Clinical Team and Enterprise plans will include onboarding support and training resources. Documentation, video walkthroughs, and a dedicated help centre will be available at launch.",
-      },
-      {
-        q: "Can I integrate MediPredict with my EHR/EMR system?",
-        a: "EHR/EMR integration is planned for the Enterprise tier. Supported integration methods (HL7 FHIR, custom API) and system compatibility will be detailed in the Enterprise documentation.",
+        q: "What format are the patient reports generated in?",
+        a: "Practitioners can view real-time interactive waterfall charts on screen or export high-resolution, printable PDF consultation summaries complete with biomarker ranges and clinical talking points.",
       },
     ],
   },
 ];
 
-export default function FAQPage() {
-  const [activeCategory, setActiveCategory] = useState("general");
+export default function FaqPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
 
-  const current = categories.find((c) => c.id === activeCategory);
+  const categories = ["All", ...FAQ_DATABASE.map((c) => c.category)];
+
+  const filteredCategories = FAQ_DATABASE.map((cat) => {
+    const matchesCategory = activeCategory === "All" || cat.category === activeCategory;
+    if (!matchesCategory) return null;
+
+    const filteredQuestions = cat.questions.filter((q) => {
+      const qText = q.q.toLowerCase();
+      const aText = q.a.toLowerCase();
+      const query = searchQuery.toLowerCase();
+      return qText.includes(query) || aText.includes(query);
+    });
+
+    if (filteredQuestions.length === 0) return null;
+
+    return {
+      ...cat,
+      questions: filteredQuestions,
+    };
+  }).filter(Boolean);
+
+  const totalMatches = filteredCategories.reduce(
+    (acc, cat) => acc + cat.questions.length,
+    0
+  );
 
   return (
     <PublicLayout>
-      {/* Hero */}
-      <Section className="pt-24 pb-10 text-center">
+      {/* ── Knowledge Base Hero ── */}
+      <section className="relative overflow-hidden pt-20 pb-16 sm:pt-28 sm:pb-24 border-b border-border/60">
+        <InteractiveGridPattern className="opacity-40 dark:opacity-10" />
         <Container>
-          <FadeIn>
-            <Badge variant="outline" className="mb-6 inline-flex gap-2 px-4 py-1.5 text-sm">
-              <HelpCircleIcon className="size-3.5" />
-              Frequently Asked Questions
-            </Badge>
-            <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Got Questions?{" "}
-              <span className="text-primary">We&apos;ve Got Answers.</span>
-            </h1>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-              Everything you need to know about MediPredict — the platform, the AI, clinical usage,
-              privacy, and how to get started.
-            </p>
-          </FadeIn>
-        </Container>
-      </Section>
-
-      {/* Category nav */}
-      <Section className="pb-4">
-        <Container>
-          <FadeIn>
-            <div className="flex flex-wrap justify-center gap-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={[
-                    "rounded-full px-4 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    activeCategory === cat.id
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "border border-border hover:bg-muted",
-                  ].join(" ")}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </FadeIn>
-        </Container>
-      </Section>
-
-      {/* FAQ accordion */}
-      <Section className="py-10">
-        <Container>
-          <div className="mx-auto max-w-2xl">
-            <FadeIn key={activeCategory}>
-              <div className="mb-4 flex items-center gap-2">
-                <span className={["rounded-full px-3 py-1 text-xs font-semibold", current?.color].join(" ")}>
-                  {current?.label}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  {current?.questions.length} questions
-                </span>
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <FadeIn>
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1 text-xs font-semibold text-primary">
+                <HelpCircle className="size-3.5" />
+                <span>Clinical &amp; Technical Knowledge Base</span>
               </div>
-
-              <Accordion type="single" collapsible className="space-y-2">
-                <StaggerList className="space-y-2">
-                  {current?.questions.map((item, i) => (
-                    <StaggerItem key={i}>
-                      <AccordionItem
-                        value={`item-${i}`}
-                        className="rounded-2xl border border-border bg-card px-5 shadow-xs overflow-hidden"
-                      >
-                        <AccordionTrigger className="py-4 text-sm font-medium text-foreground hover:no-underline">
-                          {item.q}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground leading-relaxed pb-4">
-                          {item.a}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </StaggerItem>
-                  ))}
-                </StaggerList>
-              </Accordion>
             </FadeIn>
+
+            <FadeIn delay={0.1}>
+              <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-foreground leading-[1.12]">
+                Frequently Asked{" "}
+                <span className="bg-gradient-to-r from-primary via-blue-600 to-sky-500 bg-clip-text text-transparent">
+                  Questions.
+                </span>
+              </h1>
+            </FadeIn>
+
+            <FadeIn delay={0.15}>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                Everything clinicians, researchers, and healthcare organizations need to know
+                about our predictive methodology, explainability mechanics, and security compliance.
+              </p>
+            </FadeIn>
+
+            {/* Live Search Input */}
+            <FadeIn delay={0.2}>
+              <div className="relative max-w-xl mx-auto pt-2">
+                <Search className="size-4 text-muted-foreground absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search questions e.g. 'SHAP', 'HIPAA', 'GBDT'..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-12 w-full rounded-2xl border border-input bg-card pl-11 pr-4 text-sm outline-none focus:border-primary focus:ring-3 focus:ring-primary/20 transition-all shadow-xs"
+                />
+              </div>
+            </FadeIn>
+          </div>
+        </Container>
+      </section>
+
+      {/* ── Category Navigation Bar ── */}
+      <section className="border-b border-border/70 bg-surface-subtle py-4 sticky top-16 sm:top-20 z-30 backdrop-blur-md">
+        <Container>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={[
+                  "text-xs sm:text-sm px-4 py-1.5 rounded-full font-medium transition-all",
+                  activeCategory === cat
+                    ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                    : "border border-border/80 bg-background hover:bg-surface-subtle text-muted-foreground",
+                ].join(" ")}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* ── FAQ Content Area ── */}
+      <Section className="py-16 sm:py-24 bg-background">
+        <Container>
+          <div className="max-w-3xl mx-auto space-y-12">
+            {filteredCategories.length > 0 ? (
+              filteredCategories.map((catSection) => {
+                const CatIcon = catSection.icon;
+                return (
+                  <div key={catSection.category} className="space-y-4">
+                    <div className="flex items-center gap-2.5 pb-2 border-b border-border/60">
+                      <div className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <CatIcon className="size-4" />
+                      </div>
+                      <h2 className="font-heading font-bold text-xl text-foreground">
+                        {catSection.category}
+                      </h2>
+                      <Badge variant="outline" className="text-[10px] ml-auto font-mono">
+                        {catSection.questions.length} Qs
+                      </Badge>
+                    </div>
+
+                    <Accordion type="single" collapsible className="space-y-3">
+                      {catSection.questions.map((item, qIdx) => (
+                        <AccordionItem
+                          key={qIdx}
+                          value={`${catSection.category}-${qIdx}`}
+                          className="rounded-2xl border border-border/80 bg-card px-5 shadow-xs overflow-hidden transition-colors hover:border-primary/40"
+                        >
+                          <AccordionTrigger className="py-4 text-left font-heading font-semibold text-sm sm:text-base text-foreground hover:no-underline">
+                            {item.q}
+                          </AccordionTrigger>
+                          <AccordionContent className="text-xs sm:text-sm text-muted-foreground leading-relaxed pb-4 pt-1 border-t border-border/40 mt-1">
+                            {item.a}
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-16 space-y-3">
+                <HelpCircle className="size-10 text-muted-foreground/50 mx-auto" />
+                <h3 className="font-heading font-bold text-lg text-foreground">
+                  No matching questions found
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Try searching for another keyword or browse all categories.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setActiveCategory("All");
+                  }}
+                >
+                  Reset Search
+                </Button>
+              </div>
+            )}
           </div>
         </Container>
       </Section>
 
-      {/* CTA */}
-      <Section className="py-16 text-center">
+      {/* ── Help Desk Assistance Card ── */}
+      <section className="py-16 sm:py-20 bg-surface-subtle border-t border-border/70">
         <Container>
-          <FadeIn>
-            <h2 className="font-heading text-2xl font-semibold">Still have questions?</h2>
-            <p className="mt-3 text-muted-foreground">
-              Can&apos;t find what you&apos;re looking for? Our team is happy to help.
-            </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Button asChild>
-                <Link href="/contact">Contact Us</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/about">Learn About MediPredict</Link>
+          <div className="max-w-2xl mx-auto rounded-3xl border border-border/80 bg-card p-8 sm:p-10 text-center space-y-5 shadow-xs">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary mx-auto">
+              <MessageSquare className="size-6" />
+            </div>
+            <div className="space-y-1.5">
+              <h3 className="font-heading font-bold text-2xl text-foreground">
+                Have a Clinical or Technical Question Not Listed?
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Our clinical informatics desk is available to assist physicians and healthcare
+                institutions with custom deployment inquiries.
+              </p>
+            </div>
+            <div className="pt-2">
+              <Button asChild size="lg" variant="default" className="gap-2">
+                <Link href="/contact">
+                  <span>Contact Clinical Inquiry Desk</span>
+                  <ArrowRight className="size-4" />
+                </Link>
               </Button>
             </div>
-          </FadeIn>
+          </div>
         </Container>
-      </Section>
+      </section>
     </PublicLayout>
   );
 }
-

@@ -73,6 +73,7 @@ function ResetPasswordForm() {
 
   return (
     <AuthLayout
+      variant="centered"
       badgeText="Credential Recovery"
       heading="Set new password"
       subheading="Ensure your new password adheres to clinical data governance standards."

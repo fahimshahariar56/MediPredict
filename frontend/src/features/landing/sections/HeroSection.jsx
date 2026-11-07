@@ -18,11 +18,13 @@ import { Container } from "@/components/layout/Container";
 import { FadeIn } from "@/components/animation/FadeIn";
 import { ScaleIn } from "@/components/animation/ScaleIn";
 import { Card } from "@/components/ui/card";
+import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
 
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden pt-8 pb-16 sm:pt-12 sm:pb-24 lg:pt-16 lg:pb-28">
-      {/* Background ambient lighting */}
+      {/* Background Interactive Grid & Ambient Lighting */}
+      <InteractiveGridPattern className="opacity-60 dark:opacity-20" />
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-40 right-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-primary/10 blur-[120px] dark:bg-primary/5"

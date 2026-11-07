@@ -55,6 +55,7 @@ function VerifyEmailForm() {
 
   return (
     <AuthLayout
+      variant="centered"
       badgeText="Identity Verification"
       heading="Verify your email"
       subheading={`We've dispatched a 6-digit confirmation code to ${emailParam}.`}

@@ -48,6 +48,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthLayout
+      variant="centered"
       badgeText="Account Recovery"
       heading="Reset your password"
       subheading="Enter the institutional email associated with your practitioner account, and we'll dispatch a secure recovery link."

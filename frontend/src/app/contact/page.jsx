@@ -1,248 +1,400 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
+import {
+  Mail,
+  Building2,
+  Clock,
+  ShieldCheck,
+  Send,
+  CheckCircle2,
+  AlertCircle,
+  Info,
+  RefreshCw,
+  PhoneCall,
+  MapPin,
+} from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
-import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
-import { FadeIn } from "@/components/animation/FadeIn";
-import { StaggerList, StaggerItem } from "@/components/animation/StaggerList";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Section } from "@/components/layout/Section";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MailIcon, AlertCircleIcon, InfoIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { FadeIn } from "@/components/animation/FadeIn";
 
-const SUBJECTS = [
-  { value: "", label: "Select a subject…" },
-  { value: "general", label: "General Enquiry" },
-  { value: "technical", label: "Technical Support" },
-  { value: "partnership", label: "Partnership & Collaboration" },
-  { value: "press", label: "Press & Media" },
-  { value: "privacy", label: "Privacy / Data Request" },
+const INQUIRY_CATEGORIES = [
+  { value: "", label: "Select inquiry category…" },
+  { value: "clinical_trial", label: "Clinical Trial & Multi-Center Validation" },
+  { value: "ehr_integration", label: "Health System EHR Integration (HL7 FHIR)" },
+  { value: "academic_research", label: "Academic Research & Dataset Collaboration" },
+  { value: "security_compliance", label: "Security & HIPAA Compliance Desk" },
+  { value: "general", label: "General Clinical Inquiry" },
 ];
 
-function FormField({ label, id, error, children }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium">
-        {label}
-      </label>
-      {children}
-      {error && (
-        <p className="flex items-center gap-1 text-xs text-destructive" role="alert">
-          <AlertCircleIcon className="size-3" />
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-
 export default function ContactPage() {
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
-    subject: "",
+    category: "",
+    institution: "",
     message: "",
   });
   const [errors, setErrors] = useState({});
-  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [submittedNotice, setSubmittedNotice] = useState(false);
 
-  function validate() {
-    const e = {};
-    if (!form.name.trim()) e.name = "Name is required.";
-    if (!form.email.trim()) {
-      e.email = "Email is required.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      e.email = "Please enter a valid email address.";
+  const validate = () => {
+    const errs = {};
+    if (!formData.name.trim()) {
+      errs.name = "Full name with clinical title is required.";
     }
-    if (!form.subject) e.subject = "Please select a subject.";
-    if (!form.message.trim()) {
-      e.message = "Message is required.";
-    } else if (form.message.trim().length < 20) {
-      e.message = "Message must be at least 20 characters.";
-    }
-    return e;
-  }
 
-  function handleChange(e) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (errors[e.target.name]) {
-      setErrors((prev) => ({ ...prev, [e.target.name]: undefined }));
+    if (!formData.email.trim()) {
+      errs.email = "Institutional / work email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      errs.email = "Please enter a valid institutional email.";
     }
-  }
 
-  function handleSubmit(e) {
+    if (!formData.category) {
+      errs.category = "Please select an inquiry category.";
+    }
+
+    if (!formData.message.trim()) {
+      errs.message = "Message details are required.";
+    } else if (formData.message.trim().length < 20) {
+      errs.message = "Please provide at least 20 characters of detail.";
+    }
+
+    return errs;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
-    // Show "backend required" notice — do NOT simulate a successful send
-    setSubmitted(true);
-  }
 
-  function handleReset() {
-    setForm({ name: "", email: "", subject: "", message: "" });
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setSubmittedNotice(true);
+    }, 850);
+  };
+
+  const handleReset = () => {
+    setSubmittedNotice(false);
+    setFormData({
+      name: "",
+      email: "",
+      category: "",
+      institution: "",
+      message: "",
+    });
     setErrors({});
-    setSubmitted(false);
-  }
+  };
 
   return (
     <PublicLayout>
-      {/* Hero */}
-      <Section className="pt-24 pb-10 text-center">
+      {/* ── Contact Hero ── */}
+      <section className="relative overflow-hidden pt-20 pb-16 sm:pt-28 sm:pb-24 border-b border-border/60">
+        <InteractiveGridPattern className="opacity-40 dark:opacity-10" />
         <Container>
-          <FadeIn>
-            <Badge variant="outline" className="mb-6 inline-flex gap-2 px-4 py-1.5 text-sm">
-              <MailIcon className="size-3.5" />
-              Get In Touch
-            </Badge>
-            <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Contact MediPredict
-            </h1>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-              Have a question, partnership enquiry, or feedback? We&apos;d love to hear from you.
-            </p>
-          </FadeIn>
-
-          {/* Development notice */}
-          <FadeIn delay={0.15}>
-            <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 text-left text-sm text-blue-800 dark:border-blue-800/40 dark:bg-blue-950/30 dark:text-blue-300">
-              <p className="flex items-start gap-2">
-                <InfoIcon className="mt-0.5 size-4 shrink-0" />
-                <span>
-                  <strong>MediPredict is a portfolio / research project.</strong> Contact channels
-                  are currently in development. Submissions cannot be processed at this time — a
-                  backend integration is required. The form below is a UI prototype only.
-                </span>
-              </p>
-            </div>
-          </FadeIn>
-        </Container>
-      </Section>
-
-      {/* Form */}
-      <Section className="py-12">
-        <Container>
-          <div className="mx-auto max-w-xl">
+          <div className="max-w-3xl space-y-5">
             <FadeIn>
-              {submitted ? (
-                /* ── Backend-required notice ── */
-                <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-sm">
-                  <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                    <InfoIcon className="size-6 text-amber-600 dark:text-amber-400" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1 text-xs font-semibold text-primary">
+                <Mail className="size-3.5" />
+                <span>Clinical &amp; Institutional Liaison</span>
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={0.1}>
+              <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-foreground leading-[1.12]">
+                Connect with the{" "}
+                <span className="bg-gradient-to-r from-primary via-blue-600 to-sky-500 bg-clip-text text-transparent">
+                  Clinical Informatics Desk.
+                </span>
+              </h1>
+            </FadeIn>
+
+            <FadeIn delay={0.15}>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                Whether you are exploring a multi-center cohort trial, requesting technical
+                documentation, or evaluating hospital EHR integration, our team is at your disposal.
+              </p>
+            </FadeIn>
+          </div>
+        </Container>
+      </section>
+
+      {/* ── Asymmetric Split Layout ── */}
+      <Section className="py-20 sm:py-28 bg-surface-subtle">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            {/* Left Column: Direct Channels & SLA Commitments */}
+            <div className="lg:col-span-5 space-y-8">
+              <div className="space-y-3">
+                <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                  Liaison Channels
+                </span>
+                <h2 className="font-heading font-bold text-2xl sm:text-3xl text-foreground tracking-tight">
+                  Dedicated Healthcare Pathways
+                </h2>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  Direct channels ensure inquiries reach the appropriate medical, algorithmic, or
+                  compliance specialists without bureaucratic delay.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <SpotlightCard className="p-5 flex items-start gap-4">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
+                    <Building2 className="size-5" />
                   </div>
-                  <h2 className="font-heading text-xl font-semibold">Backend Connection Required</h2>
-                  <p className="mt-3 text-sm text-muted-foreground">
-                    Your form was validated successfully, but contact form submission requires a
-                    backend server connection which has not yet been configured. This feature will
-                    be available once the backend integration is complete.
-                  </p>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    This is expected behaviour during the active development phase.
-                  </p>
-                  <Button onClick={handleReset} variant="outline" className="mt-6">
-                    Back to Form
-                  </Button>
-                </div>
-              ) : (
-                /* ── Contact form ── */
-                <form
-                  onSubmit={handleSubmit}
-                  noValidate
-                  className="rounded-3xl border border-border bg-card p-8 shadow-sm space-y-5"
-                >
-                  <StaggerList className="space-y-5">
-                    <StaggerItem>
-                      <FormField label="Full Name *" id="name" error={errors.name}>
-                        <Input
+                  <div className="space-y-1">
+                    <h3 className="font-heading font-bold text-sm text-foreground">
+                      Hospital &amp; Health System Desk
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      HL7 FHIR API sandboxes, custom BAAs, and institutional licensing evaluations.
+                    </p>
+                    <div className="text-xs font-mono text-primary pt-1">
+                      inquiry@medipredict.health
+                    </div>
+                  </div>
+                </SpotlightCard>
+
+                <SpotlightCard className="p-5 flex items-start gap-4">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
+                    <ShieldCheck className="size-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="font-heading font-bold text-sm text-foreground">
+                      Security &amp; HIPAA Governance
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Vulnerability disclosures, cryptographic architecture reviews, and audits.
+                    </p>
+                    <div className="text-xs font-mono text-emerald-600 dark:text-emerald-400 pt-1">
+                      security@medipredict.health
+                    </div>
+                  </div>
+                </SpotlightCard>
+
+                <SpotlightCard className="p-5 flex items-start gap-4">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 shrink-0">
+                    <Clock className="size-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="font-heading font-bold text-sm text-foreground">
+                      Institutional Response SLA
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Verified clinician inquiries receive an initial technical response within 24
+                      business hours.
+                    </p>
+                  </div>
+                </SpotlightCard>
+              </div>
+            </div>
+
+            {/* Right Column: Responsive Interactive Form */}
+            <div className="lg:col-span-7">
+              <div className="rounded-3xl border border-border/80 bg-card p-6 sm:p-10 shadow-xs">
+                {submittedNotice ? (
+                  <div className="space-y-6 text-left py-4 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="flex items-start gap-4">
+                      <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary shrink-0">
+                        <CheckCircle2 className="size-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="font-heading font-bold text-xl text-foreground">
+                          Inquiry Validated Successfully
+                        </h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                          Your message from <strong>{formData.name}</strong> ({formData.email})
+                          passed client-side format and schema validation.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-border/80 bg-surface-subtle p-4 text-xs text-muted-foreground flex items-start gap-2.5">
+                      <Info className="size-4 text-primary shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Phase 04 Boundary:</strong> Form transmission requires live backend
+                        SMTP email integration (scheduled for Phase 12). No simulated fake email
+                        was sent.
+                      </span>
+                    </div>
+
+                    <Button variant="outline" size="sm" onClick={handleReset} className="gap-2">
+                      <RefreshCw className="size-3.5" />
+                      <span>Send Another Inquiry</span>
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} noValidate className="space-y-5">
+                    <div className="space-y-1">
+                      <h3 className="font-heading font-bold text-xl text-foreground">
+                        Submit a Formal Inquiry
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        Fields marked with an asterisk (<span className="text-primary">*</span>) are
+                        mandatory.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Name */}
+                      <div className="space-y-1.5">
+                        <label htmlFor="name" className="text-xs font-semibold text-foreground">
+                          Full Name &amp; Title <span className="text-primary">*</span>
+                        </label>
+                        <input
                           id="name"
                           name="name"
                           type="text"
-                          autoComplete="name"
-                          placeholder="Dr. Jane Smith"
-                          value={form.name}
+                          placeholder="Dr. Eleanor Vance, MD"
+                          value={formData.name}
                           onChange={handleChange}
                           aria-invalid={!!errors.name}
-                          className="h-10"
+                          className="flex h-11 w-full rounded-xl border border-input bg-background/80 px-3.5 py-2 text-xs sm:text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                         />
-                      </FormField>
-                    </StaggerItem>
+                        {errors.name && (
+                          <p className="text-[11px] text-destructive flex items-center gap-1 pt-0.5">
+                            <AlertCircle className="size-3 shrink-0" />
+                            <span>{errors.name}</span>
+                          </p>
+                        )}
+                      </div>
 
-                    <StaggerItem>
-                      <FormField label="Email Address *" id="email" error={errors.email}>
-                        <Input
+                      {/* Work Email */}
+                      <div className="space-y-1.5">
+                        <label htmlFor="email" className="text-xs font-semibold text-foreground">
+                          Institutional Work Email <span className="text-primary">*</span>
+                        </label>
+                        <input
                           id="email"
                           name="email"
                           type="email"
-                          autoComplete="email"
-                          placeholder="jane.smith@hospital.org"
-                          value={form.email}
+                          placeholder="e.vance@mayoclinic.org"
+                          value={formData.email}
                           onChange={handleChange}
                           aria-invalid={!!errors.email}
-                          className="h-10"
+                          className="flex h-11 w-full rounded-xl border border-input bg-background/80 px-3.5 py-2 text-xs sm:text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                         />
-                      </FormField>
-                    </StaggerItem>
+                        {errors.email && (
+                          <p className="text-[11px] text-destructive flex items-center gap-1 pt-0.5">
+                            <AlertCircle className="size-3 shrink-0" />
+                            <span>{errors.email}</span>
+                          </p>
+                        )}
+                      </div>
+                    </div>
 
-                    <StaggerItem>
-                      <FormField label="Subject *" id="subject" error={errors.subject}>
-                        <select
-                          id="subject"
-                          name="subject"
-                          value={form.subject}
-                          onChange={handleChange}
-                          aria-invalid={!!errors.subject}
-                          className="flex h-10 w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive"
-                        >
-                          {SUBJECTS.map((s) => (
-                            <option key={s.value} value={s.value} disabled={s.value === ""}>
-                              {s.label}
-                            </option>
-                          ))}
-                        </select>
-                      </FormField>
-                    </StaggerItem>
+                    {/* Institution */}
+                    <div className="space-y-1.5">
+                      <label htmlFor="institution" className="text-xs font-semibold text-foreground">
+                        Hospital, Clinic, or Academic Institution
+                      </label>
+                      <input
+                        id="institution"
+                        name="institution"
+                        type="text"
+                        placeholder="Mayo Clinic / Johns Hopkins / Independent Suite"
+                        value={formData.institution}
+                        onChange={handleChange}
+                        className="flex h-11 w-full rounded-xl border border-input bg-background/80 px-3.5 py-2 text-xs sm:text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                      />
+                    </div>
 
-                    <StaggerItem>
-                      <FormField label="Message *" id="message" error={errors.message}>
-                        <Textarea
-                          id="message"
-                          name="message"
-                          rows={5}
-                          placeholder="Tell us how we can help…"
-                          value={form.message}
-                          onChange={handleChange}
-                          aria-invalid={!!errors.message}
-                          className="resize-none"
-                        />
-                        <p className="text-right text-xs text-muted-foreground">
-                          {form.message.length} / 2000
+                    {/* Category */}
+                    <div className="space-y-1.5">
+                      <label htmlFor="category" className="text-xs font-semibold text-foreground">
+                        Inquiry Category <span className="text-primary">*</span>
+                      </label>
+                      <select
+                        id="category"
+                        name="category"
+                        value={formData.category}
+                        onChange={handleChange}
+                        aria-invalid={!!errors.category}
+                        className="flex h-11 w-full rounded-xl border border-input bg-background/80 px-3 py-2 text-xs sm:text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                      >
+                        {INQUIRY_CATEGORIES.map((cat) => (
+                          <option key={cat.value} value={cat.value} disabled={cat.value === ""}>
+                            {cat.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.category && (
+                        <p className="text-[11px] text-destructive flex items-center gap-1 pt-0.5">
+                          <AlertCircle className="size-3 shrink-0" />
+                          <span>{errors.category}</span>
                         </p>
-                      </FormField>
-                    </StaggerItem>
-                  </StaggerList>
+                      )}
+                    </div>
 
-                  <Button type="submit" className="w-full" size="lg">
-                    Send Message
-                  </Button>
+                    {/* Message */}
+                    <div className="space-y-1.5">
+                      <label htmlFor="message" className="text-xs font-semibold text-foreground">
+                        Inquiry Details <span className="text-primary">*</span>
+                      </label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        rows={4}
+                        placeholder="Please describe your clinical evaluation context or trial questions…"
+                        value={formData.message}
+                        onChange={handleChange}
+                        aria-invalid={!!errors.message}
+                        className="flex w-full rounded-xl border border-input bg-background/80 p-3.5 text-xs sm:text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                      />
+                      {errors.message && (
+                        <p className="text-[11px] text-destructive flex items-center gap-1 pt-0.5">
+                          <AlertCircle className="size-3 shrink-0" />
+                          <span>{errors.message}</span>
+                        </p>
+                      )}
+                    </div>
 
-                  <p className="text-center text-xs text-muted-foreground">
-                    By submitting this form you agree to our{" "}
-                    <a href="/privacy" className="underline underline-offset-3 hover:text-foreground">
-                      Privacy Policy
-                    </a>
-                    .
-                  </p>
-                </form>
-              )}
-            </FadeIn>
+                    <Button
+                      type="submit"
+                      variant="default"
+                      size="lg"
+                      loading={loading}
+                      className="w-full h-11 text-sm font-semibold rounded-xl gap-2 shadow-sm"
+                    >
+                      <Send className="size-4" />
+                      <span>Transmit Clinical Inquiry</span>
+                    </Button>
+
+                    <p className="text-center text-[11px] text-muted-foreground pt-1">
+                      By submitting you agree to our{" "}
+                      <Link href="/privacy" className="text-primary hover:underline">
+                        Privacy Policy
+                      </Link>
+                      . Inquiries are handled under zero-PHI confidentiality.
+                    </p>
+                  </form>
+                )}
+              </div>
+            </div>
           </div>
         </Container>
       </Section>
     </PublicLayout>
   );
 }
-

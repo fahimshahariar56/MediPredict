@@ -7,6 +7,7 @@ import { HeartPulse, Menu, X, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/layout/Container";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 const PUBLIC_NAV_LINKS = [
@@ -87,7 +88,8 @@ export function Navbar() {
         </nav>
 
         {/* Desktop Action Buttons */}
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-2.5">
+          <ThemeToggle />
           <Link href="/login">
             <Button variant="ghost" size="sm" className="font-medium text-foreground">
               Sign In
@@ -139,6 +141,10 @@ export function Navbar() {
             </div>
 
             <div className="border-t border-border/80 pt-4 flex flex-col gap-2.5">
+              <div className="flex items-center justify-between py-1 px-1">
+                <span className="text-sm font-medium text-muted-foreground">Appearance</span>
+                <ThemeToggle />
+              </div>
               <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="outline" className="w-full justify-center">
                   Sign In

@@ -1,191 +1,345 @@
+"use client";
+
 import React from "react";
+import Link from "next/link";
+import {
+  Check,
+  X,
+  Clock,
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  Building2,
+  User,
+  Info,
+} from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
-import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
-import { FadeIn } from "@/components/animation/FadeIn";
-import { StaggerList, StaggerItem } from "@/components/animation/StaggerList";
+import { Section } from "@/components/layout/Section";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
-import { CheckIcon, ClockIcon } from "lucide-react";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { BorderBeam } from "@/components/animation/BorderBeam";
+import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
+import { FadeIn } from "@/components/animation/FadeIn";
 
-export const metadata = {
-  title: "Pricing — MediPredict",
-  description:
-    "MediPredict pricing plans are coming soon. Join the waitlist to be notified when plans are available.",
-};
-
-const tiers = [
+const TIERS = [
   {
-    name: "Individual",
-    badge: "Coming Soon",
-    tagline: "For independent clinicians and researchers",
-    cta: "Join Waitlist",
-    ctaHref: "/contact",
+    name: "Independent Practitioner",
+    badge: "Solo Clinician",
+    price: "TBD",
+    period: "during open research",
+    tagline: "For individual physicians, endocrinologists, and medical researchers.",
     popular: false,
-    features: [
-      "Patient risk predictions (up to 5 models)",
-      "SHAP-based explanation reports",
-      "Export to PDF / CSV",
-      "Secure single-user workspace",
-      "Email support",
+    cta: "Join Clinical Waitlist",
+    ctaHref: "/contact",
+    highlights: [
+      "Access to all calibrated GBDT risk models",
+      "Instant individual SHAP waterfall explanations",
+      "Downloadable physician consultation PDF reports",
+      "Single-user zero-knowledge encrypted workspace",
+      "Standard email technical support",
     ],
   },
   {
-    name: "Clinical Team",
-    badge: "Most Popular",
-    tagline: "For small-to-medium clinical practices",
-    cta: "Join Waitlist",
-    ctaHref: "/contact",
+    name: "Clinical Practice Team",
+    badge: "Recommended Practice Tier",
+    price: "TBD",
+    period: "institutional evaluation",
+    tagline: "For multi-physician outpatient clinics, cardiology suites, and care teams.",
     popular: true,
-    features: [
-      "Everything in Individual",
-      "Up to 10 team members",
-      "Shared patient cohort dashboard",
-      "Role-based access control",
-      "Audit logs & compliance reports",
-      "Priority email & chat support",
+    cta: "Request Team Onboarding",
+    ctaHref: "/contact",
+    highlights: [
+      "Everything in Independent Practitioner",
+      "Up to 15 clinician team member seats",
+      "Shared patient cohort risk analytics dashboard",
+      "Role-based access controls (Physician, Nurse, Admin)",
+      "Audit trail logs for clinical compliance records",
+      "Priority clinical advisory & expedited support",
     ],
   },
   {
-    name: "Enterprise",
-    badge: "Coming Soon",
-    tagline: "For hospital networks & health systems",
-    cta: "Contact Us",
-    ctaHref: "/contact",
+    name: "Health System Enterprise",
+    badge: "Hospital Networks",
+    price: "Custom",
+    period: "annual licensing",
+    tagline: "For regional hospital conglomerates, academic health centers, and HMOs.",
     popular: false,
-    features: [
-      "Everything in Clinical Team",
-      "Unlimited users & patients",
-      "On-premise deployment option",
-      "Custom EHR/EMR integrations",
-      "Dedicated account manager",
-      "SLA & HIPAA BAA support",
+    cta: "Contact Enterprise Solutions",
+    ctaHref: "/contact",
+    highlights: [
+      "Everything in Clinical Practice Team",
+      "Unlimited clinician & researcher seats",
+      "HL7 FHIR & Epic/Cerner EHR API integration",
+      "Dedicated on-premise or sovereign cloud deployment",
+      "Custom BAA & formal HIPAA SLA guarantees",
+      "Dedicated Clinical Account Lead & 24/7 hotline",
     ],
+  },
+];
+
+const COMPARISON_MATRIX = [
+  {
+    feature: "Diabetes Risk Stratification (GBDT)",
+    independent: true,
+    team: true,
+    enterprise: true,
+  },
+  {
+    feature: "Cardiovascular Health Model (ASCVD)",
+    independent: true,
+    team: true,
+    enterprise: true,
+  },
+  {
+    feature: "SHAP Factor Attribution Decomposition",
+    independent: true,
+    team: true,
+    enterprise: true,
+  },
+  {
+    feature: "Physician-Ready PDF Consultation Export",
+    independent: true,
+    team: true,
+    enterprise: true,
+  },
+  {
+    feature: "Shared Team Patient Cohort Dashboard",
+    independent: false,
+    team: true,
+    enterprise: true,
+  },
+  {
+    feature: "Role-Based Access Control (RBAC)",
+    independent: false,
+    team: true,
+    enterprise: true,
+  },
+  {
+    feature: "HL7 FHIR / EHR System Integration API",
+    independent: false,
+    team: false,
+    enterprise: true,
+  },
+  {
+    feature: "On-Premise / Air-Gapped Sovereign Deployment",
+    independent: false,
+    team: false,
+    enterprise: true,
+  },
+  {
+    feature: "Dedicated Business Associate Agreement (BAA)",
+    independent: false,
+    team: "Add-on",
+    enterprise: true,
+  },
+  {
+    feature: "Clinical Support SLA",
+    independent: "48h response",
+    team: "12h response",
+    enterprise: "1h priority hotline",
   },
 ];
 
 export default function PricingPage() {
   return (
     <PublicLayout>
-      {/* Hero */}
-      <Section className="pt-24 pb-12 text-center">
+      {/* ── Pricing Hero ── */}
+      <section className="relative overflow-hidden pt-20 pb-16 sm:pt-28 sm:pb-24 border-b border-border/60">
+        <InteractiveGridPattern className="opacity-40 dark:opacity-10" />
         <Container>
-          <FadeIn>
-            <Badge variant="outline" className="mb-6 inline-flex gap-2 px-4 py-1.5 text-sm">
-              <ClockIcon className="size-3.5" />
-              Pricing Coming Soon
-            </Badge>
-            <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Plans Built for{" "}
-              <span className="text-primary">Healthcare Professionals</span>
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-              MediPredict is currently in active development. Pricing has not
-              yet been finalised. Join the waitlist to be among the first to
-              access the platform when plans go live.
-            </p>
-          </FadeIn>
+          <div className="max-w-3xl mx-auto text-center space-y-5">
+            <FadeIn>
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1 text-xs font-semibold text-primary">
+                <Clock className="size-3.5" />
+                <span>Transparent Tier Architecture</span>
+              </div>
+            </FadeIn>
 
-          {/* Notice banner */}
-          <FadeIn delay={0.15}>
-            <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-amber-200 bg-amber-50 px-6 py-4 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-950/30 dark:text-amber-300">
-              <strong>⚠ Notice:</strong> All pricing tiers shown below are
-              illustrative placeholders. No actual prices or billing dates have
-              been set. This page will be updated when official plans are
-              announced.
-            </div>
-          </FadeIn>
+            <FadeIn delay={0.1}>
+              <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-foreground leading-[1.12]">
+                Plans Engineered for{" "}
+                <span className="bg-gradient-to-r from-primary via-blue-600 to-sky-500 bg-clip-text text-transparent">
+                  Clinical Scale.
+                </span>
+              </h1>
+            </FadeIn>
+
+            <FadeIn delay={0.15}>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                MediPredict is currently in active development. Commercial pricing structures will
+                be finalized following multi-cohort clinical trials. Join the priority waitlist
+                for early access.
+              </p>
+            </FadeIn>
+
+            <FadeIn delay={0.2}>
+              <div className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-4 text-xs text-primary max-w-xl mx-auto flex items-center justify-center gap-2.5">
+                <Info className="size-4 shrink-0" />
+                <span>
+                  <strong>Development Notice:</strong> All tiers are currently in clinical open
+                  access for verified academic and medical research partners.
+                </span>
+              </div>
+            </FadeIn>
+          </div>
         </Container>
-      </Section>
+      </section>
 
-      {/* Pricing cards */}
-      <Section className="py-12">
+      {/* ── 3-Tier Comparison Cards ── */}
+      <Section className="py-20 sm:py-28 bg-surface-subtle border-b border-border/70">
         <Container>
-          <StaggerList className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
-            {tiers.map((tier) => (
-              <StaggerItem key={tier.name}>
-                <Card
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+            {TIERS.map((tier) => (
+              <div key={tier.name} className="relative flex flex-col">
+                <SpotlightCard
                   className={[
-                    "relative flex h-full flex-col rounded-3xl p-8 transition-shadow",
+                    "relative flex-1 flex flex-col justify-between p-8 rounded-3xl transition-all duration-300",
                     tier.popular
-                      ? "border-primary/60 shadow-lg ring-2 ring-primary/20"
-                      : "border-border shadow-sm",
+                      ? "border-primary/80 bg-card shadow-lg ring-2 ring-primary/20"
+                      : "border-border/80 bg-card shadow-xs",
                   ].join(" ")}
                 >
                   {tier.popular && (
-                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-primary text-primary-foreground px-4 py-1 text-xs font-semibold shadow-sm">
-                        {tier.badge}
-                      </Badge>
-                    </div>
+                    <BorderBeam size={200} duration={12} borderWidth={1.5} />
                   )}
 
-                  {/* Header */}
-                  <div className="mb-6">
-                    {!tier.popular && (
-                      <Badge variant="secondary" className="mb-3 text-xs">
-                        {tier.badge}
-                      </Badge>
-                    )}
-                    <h2 className="font-heading text-2xl font-bold">{tier.name}</h2>
-                    <p className="mt-1 text-sm text-muted-foreground">{tier.tagline}</p>
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <Badge
+                          variant={tier.popular ? "default" : "outline"}
+                          className="text-[11px] font-semibold"
+                        >
+                          {tier.badge}
+                        </Badge>
+                      </div>
+                      <h3 className="font-heading font-bold text-2xl text-foreground">
+                        {tier.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                        {tier.tagline}
+                      </p>
+                    </div>
+
+                    {/* Price Block */}
+                    <div className="space-y-1 pb-6 border-b border-border/60">
+                      <div className="flex items-baseline gap-2">
+                        <span className="font-heading font-extrabold text-4xl text-foreground">
+                          {tier.price}
+                        </span>
+                        <span className="text-xs text-muted-foreground font-mono">
+                          / {tier.period}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Features list */}
+                    <ul className="space-y-3 text-xs">
+                      {tier.highlights.map((f, i) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <Check className="size-4 text-primary shrink-0 mt-0.5" />
+                          <span className="text-foreground leading-relaxed">{f}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
-                  {/* Price placeholder */}
-                  <div className="mb-6 flex items-end gap-1">
-                    <span className="font-heading text-4xl font-bold text-muted-foreground/60">
-                      TBD
-                    </span>
-                    <span className="mb-1 text-sm text-muted-foreground">/ month</span>
+                  <div className="pt-8">
+                    <Button
+                      asChild
+                      variant={tier.popular ? "default" : "outline"}
+                      className="w-full h-11 text-sm font-semibold rounded-xl"
+                    >
+                      <Link href={tier.ctaHref}>{tier.cta}</Link>
+                    </Button>
                   </div>
-
-                  {/* Features */}
-                  <ul className="mb-8 flex flex-1 flex-col gap-3">
-                    {tier.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-sm">
-                        <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* CTA */}
-                  <Button
-                    asChild
-                    variant={tier.popular ? "default" : "outline"}
-                    className="w-full"
-                  >
-                    <Link href={tier.ctaHref}>{tier.cta}</Link>
-                  </Button>
-                </Card>
-              </StaggerItem>
+                </SpotlightCard>
+              </div>
             ))}
-          </StaggerList>
+          </div>
         </Container>
       </Section>
 
-      {/* FAQ nudge */}
-      <Section className="py-16 text-center">
+      {/* ── Comprehensive Feature Comparison Matrix ── */}
+      <Section className="py-20 sm:py-28 bg-background">
         <Container>
-          <FadeIn>
-            <h2 className="font-heading text-2xl font-semibold">Have questions?</h2>
-            <p className="mt-3 text-muted-foreground">
-              Check our{" "}
-              <Link href="/faq" className="text-primary underline underline-offset-4 hover:opacity-80">
-                FAQ page
-              </Link>{" "}
-              or{" "}
-              <Link href="/contact" className="text-primary underline underline-offset-4 hover:opacity-80">
-                get in touch
-              </Link>
-              .
+          <div className="max-w-2xl mx-auto text-center space-y-3 mb-16">
+            <Badge variant="outline" className="px-3 py-1 text-xs">
+              Feature Matrix
+            </Badge>
+            <h2 className="font-heading font-bold text-3xl sm:text-4xl text-foreground tracking-tight">
+              Compare Platform Capabilities
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Granular breakdown of capabilities, security protocols, and integration pathways.
             </p>
-          </FadeIn>
+          </div>
+
+          <div className="overflow-x-auto rounded-3xl border border-border/80 bg-card shadow-xs max-w-5xl mx-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-border bg-surface-subtle text-xs uppercase font-semibold text-muted-foreground">
+                <tr>
+                  <th className="py-4 px-6 w-1/2">Capability</th>
+                  <th className="py-4 px-4 text-center">Independent</th>
+                  <th className="py-4 px-4 text-center text-primary font-bold">Clinical Team</th>
+                  <th className="py-4 px-4 text-center">Health System</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {COMPARISON_MATRIX.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-surface-subtle/50 transition-colors">
+                    <td className="py-4 px-6 font-medium text-foreground text-xs sm:text-sm">
+                      {row.feature}
+                    </td>
+                    <td className="py-4 px-4 text-center">
+                      {typeof row.independent === "boolean" ? (
+                        row.independent ? (
+                          <Check className="size-4 text-primary mx-auto" />
+                        ) : (
+                          <X className="size-4 text-muted-foreground/40 mx-auto" />
+                        )
+                      ) : (
+                        <span className="text-xs text-muted-foreground font-mono">
+                          {row.independent}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-4 px-4 text-center bg-primary/[0.02]">
+                      {typeof row.team === "boolean" ? (
+                        row.team ? (
+                          <Check className="size-4 text-primary mx-auto font-bold" />
+                        ) : (
+                          <X className="size-4 text-muted-foreground/40 mx-auto" />
+                        )
+                      ) : (
+                        <span className="text-xs text-primary font-semibold font-mono">
+                          {row.team}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-4 px-4 text-center">
+                      {typeof row.enterprise === "boolean" ? (
+                        row.enterprise ? (
+                          <Check className="size-4 text-primary mx-auto" />
+                        ) : (
+                          <X className="size-4 text-muted-foreground/40 mx-auto" />
+                        )
+                      ) : (
+                        <span className="text-xs text-muted-foreground font-mono">
+                          {row.enterprise}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Container>
       </Section>
     </PublicLayout>
   );
 }
-

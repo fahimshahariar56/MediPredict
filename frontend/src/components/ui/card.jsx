@@ -1,22 +1,35 @@
-import * as React from "react"
-import { cn } from "cn"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 function Card({
   className,
   size = "default",
+  variant = "default",
+  hover = false,
   ...props
 }) {
+  const variantClasses = {
+    default: "bg-card border border-border/70 shadow-xs",
+    subtle: "bg-surface-subtle border border-border/50",
+    elevated: "bg-card border border-border/60 shadow-md",
+    interactive:
+      "bg-card border border-border/70 shadow-xs hover:shadow-md hover:-translate-y-0.5 hover:border-primary/40 transition-all duration-200 cursor-pointer",
+  };
+
   return (
     <div
       data-slot="card"
       data-size={size}
+      data-variant={variant}
       className={cn(
-        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(4)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-2xl text-sm text-card-foreground [--card-spacing:--spacing(5)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3.5)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-2xl *:[img:last-child]:rounded-b-2xl",
+        variantClasses[variant] || variantClasses.default,
+        hover && "hover:shadow-md hover:-translate-y-0.5 hover:border-primary/40 transition-all duration-200",
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CardHeader({
@@ -27,12 +40,12 @@ function CardHeader({
     <div
       data-slot="card-header"
       className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-1.5 rounded-t-2xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CardTitle({
@@ -43,12 +56,12 @@ function CardTitle({
     <div
       data-slot="card-title"
       className={cn(
-        "font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
+        "font-heading text-lg leading-snug font-semibold text-foreground tracking-tight group-data-[size=sm]/card:text-base",
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CardDescription({
@@ -58,10 +71,10 @@ function CardDescription({
   return (
     <div
       data-slot="card-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-sm text-muted-foreground leading-relaxed", className)}
       {...props}
     />
-  )
+  );
 }
 
 function CardAction({
@@ -77,7 +90,7 @@ function CardAction({
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CardContent({
@@ -90,7 +103,7 @@ function CardContent({
       className={cn("px-(--card-spacing)", className)}
       {...props}
     />
-  )
+  );
 }
 
 function CardFooter({
@@ -101,12 +114,12 @@ function CardFooter({
     <div
       data-slot="card-footer"
       className={cn(
-        "flex items-center rounded-b-xl border-t bg-muted/50 p-(--card-spacing)",
+        "flex items-center rounded-b-2xl border-t border-border/50 bg-muted/30 p-(--card-spacing)",
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -117,4 +130,4 @@ export {
   CardAction,
   CardDescription,
   CardContent,
-}
+};

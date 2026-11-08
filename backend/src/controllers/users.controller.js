@@ -1,15 +1,15 @@
 import User from "../models/user.model.js";
+import AppError from "../utils/AppError.js";
 
 // create a new user
-export const createUser = async (req, res) => {
+export const createUser = async (req, res, next) => {
     try {
-        const { name, email, role } = req.body;
 
         const user = await User.create(
             {
-                name,
-                email,
-                role
+                name: req.body.name,
+                email: req.body.email,
+                role: req.body.role || "user"
             }
         )
 
@@ -21,17 +21,12 @@ export const createUser = async (req, res) => {
     }
 
     catch (error) {
-        console.error(`Error: ${error.message}`);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message
-        })
+        next(error);
     }
 }
 
 // get all users
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
     try {
         const users = await User.find();
 
@@ -44,27 +39,19 @@ export const getUsers = async (req, res) => {
     }
 
     catch (error) {
-        console.error(`Error: ${error.message}`);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message
-        });
+        next(error);
     }
 
 }
 
 
 // get user by id
-export const getUserById = async (req, res) => {
+export const getUserById = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id);
 
         if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            });
+            throw new AppError("User not found", 404);
         }
 
         return res.status(200).json({
@@ -75,12 +62,7 @@ export const getUserById = async (req, res) => {
     }
 
     catch (error) {
-        console.error(`Error: ${error.message}`);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message
-        });
+        next(error);
     }
 
 }
@@ -89,7 +71,7 @@ export const getUserById = async (req, res) => {
 
 // Update user by id
 
-export const updateUserById = async (req, res) => {
+export const updateUserById = async (req, res, next) => {
     try {
         const user = await User.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
@@ -97,10 +79,7 @@ export const updateUserById = async (req, res) => {
         });
 
         if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            });
+            throw new AppError("User not found", 404);
         }
 
         return res.status(200).json({
@@ -111,43 +90,28 @@ export const updateUserById = async (req, res) => {
     }
 
     catch (error) {
-        console.error(`Error: ${error.message}`);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message
-        })
+        next(error);
     }
 }
 
+
+
 // Delete user by id
 
-export const deleteUserById = async (req, res) => {
+export const deleteUserById = async (req, res, next) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id);
 
         if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            });
+            throw new AppError("User not found", 404);
         }
+
+        
         return res.status(200).json({
             success: true,
             message: "User deleted successfully"
         });
     } catch (error) {
-        if (error.name === "CastError") {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid user ID",
-            });
-        }
-
-        return res.status(500).json({
-            success: false,
-            message: "Failed to delete user",
-            error: error.message,
-        });
+        next(error);
     }
 }

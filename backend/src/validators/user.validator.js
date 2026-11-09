@@ -1,22 +1,22 @@
 import { z } from "zod";
 
 export const createUserSchema = z
-    
-.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, "Name must be at least 2 characters"),
 
-  email: z
-    .string()
-    .trim()
-    .email("Invalid email address"),
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(2, "Name must be at least 2 characters"),
 
-  role: z
-    .enum(["user", "admin"])
-    .optional(),
-});
+    email: z
+      .string()
+      .trim()
+      .email("Invalid email address"),
+
+    role: z
+      .enum(["user", "admin"])
+      .optional(),
+  });
 
 
 
@@ -46,7 +46,32 @@ export const updateUserSchema = z
 
 
 
-  export const getUsersQuerySchema = z.object({
-    page: z.coerce.number().int().min(1).default(1),
-    limit: z.coerce.number().int().min(1).max(100).default(10),
+export const getUsersQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+
+  search: z.string().trim().optional(),
+
+  role: z.enum(["user", "admin"]).optional(),
+
+  sort: z
+    .string()
+    .trim()
+    .refine(
+      (value) => {
+        const fields = value.split(",");
+
+        return fields.every((field) => {
+          const fieldName = field.startsWith("-")
+            ? field.substring(1)
+            : field;
+
+          return ["name", "email", "role", "createdAt"].includes(fieldName);
+        });
+      },
+      {
+        message: "Invalid sort field",
+      }
+    )
+    .optional(),
 });

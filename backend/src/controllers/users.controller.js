@@ -34,8 +34,22 @@ export const getUsers = async (req, res, next) => {
 
         const skip = (page - 1) * limit;
 
+        const { search, role } = req.query;
+
+        const filter = {};
+
+        if (search) {
+            filter.$or = [
+                { name: { $regex: search, $options: "i" } },
+                { email: { $regex: search, $options: "i" } },
+            ];
+        }
+
+        if (role) {
+            filter.role = role;
+        }
         
-        const users = await User.find().skip(skip).limit(limit);
+        const users = await User.find(filter).skip(skip).limit(limit);
 
         const toggleCount = await User.countDocuments();
         const totalPages = Math.ceil(toggleCount / limit);
@@ -45,6 +59,12 @@ export const getUsers = async (req, res, next) => {
             message: "Users retrieved successfully",
             count: users.length,
             data: users,
+            pagination: {
+                total: toggleCount,
+                page,
+                totalPages,
+                limit
+            }
         });
     }
 

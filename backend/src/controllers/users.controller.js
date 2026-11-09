@@ -1,101 +1,68 @@
 import User from "../models/user.model.js";
 import AppError from "../utils/AppError.js";
+import {
+    getUsersService,
+    createUserService,
+    getUserByIdService,
+    updateUserByIdService,
+    deleteUserByIdService
+} from "../services/users.service.js";
 
 // create a new user
 export const createUser = async (req, res, next) => {
     try {
-
-        const user = await User.create(
-            {
-                name: req.body.name,
-                email: req.body.email,
-                role: req.body.role || "user"
-            }
-        )
+        const user = await createUserService({
+            name: req.body.name,
+            email: req.body.email,
+            role: req.body.role,
+        });
 
         return res.status(201).json({
             success: true,
             message: "User created successfully",
-            data: user
-        })
-    }
-
-    catch (error) {
-        next(error);
-    }
-}
-
-// get all users
-export const getUsers = async (req, res, next) => {
-    try {
-
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
-
-        const skip = (page - 1) * limit;
-
-        const { search, role, sort } = req.query;
-
-        const filter = {};
-
-        const sortOption = {};
-
-        if (sort) {
-            const sortFields = sort.split(",");
-
-            sortFields.forEach((field) => {
-                if (field.startsWith("-")) {
-                    sortOption[field.substring(1)] = -1;
-                } else {
-                    sortOption[field] = 1;
-                }
-            });
-        }
-
-        if (search) {
-            filter.$or = [
-                { name: { $regex: search, $options: "i" } },
-                { email: { $regex: search, $options: "i" } },
-            ];
-        }
-
-        if (role) {
-            filter.role = role;
-        }
-
-        const users = await User.find(filter)
-                .sort(sortOption)
-                .skip(skip)
-                .limit(limit);
-
-        const toggleCount = await User.countDocuments();
-        const totalPages = Math.ceil(toggleCount / limit);
-
-        return res.status(200).json({
-            success: true,
-            message: "Users retrieved successfully",
-            count: users.length,
-            data: users,
-            pagination: {
-                total: toggleCount,
-                page,
-                totalPages,
-                limit
-            }
+            data: user,
         });
     }
 
     catch (error) {
         next(error);
     }
+};
 
+// get all users
+export const getUsers = async (req, res, next) => {
+    try {
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+
+        const { search, role, sort } = req.query;
+
+        const result = await getUsersService({
+            page,
+            limit,
+            search,
+            role,
+            sort,
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Users retrieved successfully",
+            data: result.users,
+            pagination: result.pagination,
+        });
+    }
+
+    catch (error) {
+        next(error);
+    }
 }
 
 
 // get user by id
 export const getUserById = async (req, res, next) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await getUserByIdService(req.params.id);
 
         if (!user) {
             throw new AppError("User not found", 404);
@@ -111,8 +78,7 @@ export const getUserById = async (req, res, next) => {
     catch (error) {
         next(error);
     }
-
-}
+};
 
 
 
@@ -120,10 +86,10 @@ export const getUserById = async (req, res, next) => {
 
 export const updateUserById = async (req, res, next) => {
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true,
-        });
+        const user = await updateUserByIdService(
+            req.params.id,
+            req.body
+        );
 
         if (!user) {
             throw new AppError("User not found", 404);
@@ -139,7 +105,7 @@ export const updateUserById = async (req, res, next) => {
     catch (error) {
         next(error);
     }
-}
+};
 
 
 
@@ -147,18 +113,19 @@ export const updateUserById = async (req, res, next) => {
 
 export const deleteUserById = async (req, res, next) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id);
+        const user = await deleteUserByIdService(req.params.id);
 
         if (!user) {
             throw new AppError("User not found", 404);
         }
 
-
         return res.status(200).json({
             success: true,
-            message: "User deleted successfully"
+            message: "User deleted successfully",
         });
-    } catch (error) {
+    }
+
+    catch (error) {
         next(error);
     }
-}
+};
